@@ -22,6 +22,17 @@ union pixel_color {
         u_int8_t b;
         u_int8_t a;
     } __attribute__((packed));
+
+    pixel_color() : color(0) {}
+    pixel_color(u_int8_t r, u_int8_t g, u_int8_t b, u_int8_t a) : r(r), g(g), b(b), a(a) {}
+
+    bool operator==(const pixel_color &other) const {
+        return r == other.r && g == other.g && b == other.b && a == other.a;
+    }
+
+    bool operator!=(const pixel_color &other) const {
+        return r != other.r || g != other.g || b != other.b || a != other.a;
+    }
 };
 
 class Window {

@@ -25,9 +25,9 @@ Window::Window(std::string const title) {
     _width = w.ws_col + 1;
     _height = (w.ws_row + 1) * 2;
     _pixels = std::vector<pixel_color>();
-    _pixels.resize(_width * _height, pixel_color{.r = 0, .g = 0, .b = 0, .a = 255});
+    _pixels.resize(_width * _height, pixel_color( 0, 0, 0,  255));
     _oldPixels = std::vector<pixel_color>();
-    _oldPixels.resize(_width * _height, pixel_color{.r = 0, .g = 0, .b = 0, .a = 255});
+    _oldPixels.resize(_width * _height, pixel_color( 0, 0, 0,  255));
     _clock = 60;
     int param = ioctl(_fd, F_GETFL, 0);
     fcntl(_fd, F_SETFL, param | O_NONBLOCK);
@@ -57,7 +57,7 @@ void Window::clearPixel()
 {
     for (u_int64_t i = 0; i < _height; i ++) {
         for (u_int64_t j = 0; j < _width; j++) {
-            setPixel(j, i, pixel_color{.r = 0, .g = 0, .b = 0, .a = 255});
+            setPixel(j, i, pixel_color(0, 0,0,255));
         }
     }
 }
@@ -74,7 +74,7 @@ void Window::printPixel()
 
 void Window::setPixel(u_int64_t x, u_int64_t y, pixel_color color)
 {
-    if (x >= _width || y >= _height)
+    if (x > _width || y > _height)
         return;
     _pixels[y * _width + x] = color;
 }
@@ -88,11 +88,11 @@ bool Window::updateTermSize()
 {
     struct winsize w;
     ioctl(_fd, TIOCGWINSZ, &w);
-    if (w.ws_col + 1!= _width || (w.ws_row + 1) * 2 != _height) {
+    if (static_cast<u_int64_t>(w.ws_col) + 1!= _width || static_cast<u_int64_t>(w.ws_row + 1) * 2 != _height) {
         _width = w.ws_col + 1;
         _height = (w.ws_row + 1) * 2;
-        _pixels.resize(_width * _height , pixel_color{.r = 0, .g = 0, .b = 0, .a = 255});
-        _oldPixels.resize(_width * _height, pixel_color{.r = 0, .g = 0, .b = 0, .a = 255});
+            _pixels.resize(_width * _height , pixel_color( 0, 0, 0,  255));
+        _oldPixels.resize(_width * _height, pixel_color(0, 0, 0, 255));
         updateAllPixels();
         return true;
     };
@@ -101,7 +101,6 @@ bool Window::updateTermSize()
 
 void Window::disableEcho()
 {
-    LOG("disable echo : fd -> " + std::to_string(_fd));
     tcgetattr(_fd, &_tty);
     _tty.c_lflag &=(~ICANON & ~ECHO);
     tcsetattr(STDIN_FILENO,TCSANOW,&_tty);
@@ -152,7 +151,7 @@ void Window::update()
 void Window::draw()
 {
     if (!_content.empty()) {
-        ssize_t n = write(_fd, _content.c_str(), _content.size());
+        write(_fd, _content.c_str(), _content.size());
         _content = "";
         for (u_int64_t i = 0; i < _height; i += 2) {
             for (u_int64_t j = 0; j < _width; j++) {

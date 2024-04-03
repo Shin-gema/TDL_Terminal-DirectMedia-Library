@@ -15,61 +15,56 @@
 #include <png.h>
 #include <tuple>
 
+void setAnimeTexture(Texture *texture)
+{
+    textureRect rect = texture->getRect().value();
+    if (rect.x + 32 < texture->getWidth() - 32)
+        rect.x += 32;
+    else {
+        rect.x = 0;
+        if (rect.y + 32 < texture->getHeight())
+            rect.y += 32;
+        else
+            rect.y = 0;
+    }
+    texture->setTextureRect(rect);
+}
+
 void textureBouncWall(Texture *texture, Window *win) {
 
     Input input = Input();
-
-    u_int64_t x = 1;
-    u_int64_t y = 1;
-    MoveVector vectorWidth = RIGHT;
-    MoveVector vectorHeight = DOWN;
-    pixel_color color = {.r = 0, .g = 0, .b = 0, .a = 100};
+    int x = 50;
+    int y = 50;
+    float i = 0.0;
     while (1) {
+        input.readInput(win);
+        if (input.on_pressed(KEY_ESC))
+            break;
         win->updateTermSize();
         win->clearPixel();
-        //win->clearScreen();
+        if (input.on_pressed(KEY_D))
+            x += 1;
+        if (input.on_pressed(KEY_Q))
+            x -= 1;
+        if (input.on_pressed(KEY_Z))
+            y -= 1;
+        if (input.on_pressed(KEY_S))
+            y += 1;
+        texture->rotate(i);
+        i += 1;
+        if (i > 360)
+            i = 0;
         texture->draw(win);
-        if (vectorWidth == RIGHT)
-            x++;
-        else
-            x--;
-        if (vectorHeight == DOWN)
-            y++;
-        else
-            y--;
-        if (x + texture->getWidthResized().value() >= win->getWidth()) {
-            vectorWidth = LEFT;
-            color.color += 10000;
-        }
-        if (x == 0) {
-            color.color += 10000;
-            vectorWidth = RIGHT;
-        }
-        if (y + texture->getHeightResized().value() >= win->getHeigth()) {
-            color.color += 10000;
-            vectorHeight = UP;
-        }
-        if (y == 0) {
-            color.color += 10000;
-            vectorHeight = DOWN;
-        }
-        input.readInput(win);
-        if (input.on_maintain(KEY_C))
-            texture->setTint({.r = 0, .g = 255, .b = 0, .a = 255});
-        if (input.on_release(KEY_C))
-            texture->resetTintColor();
-        texture->setPos(x, y);
         win->update();
         win->draw();
     }
-
 }
 
 int main()
 {
     Window win("test");
-    Texture texture("./testing/dvd.png");
-    texture.resizeImage(0.1);
+    Texture texture("./testing/Spinner.png");
+    texture.setPos(0, 0);
     win.disableEcho();
     win.removeMouseCursor();
     win.alternateScreenBuffer();

@@ -12,6 +12,9 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include "../logger/logger.hpp"
+#include <cmath>
+#include "Vector.hpp"
 
 Texture::Texture(std::string path)
 {
@@ -67,7 +70,7 @@ void Texture::loadTexture()
     _png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     _info_ptr = png_create_info_struct(_png_ptr);
     png_init_io(_png_ptr, fp);
-    png_read_png(_png_ptr, _info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+    png_read_png(_png_ptr, _info_ptr, PNG_TRANSFORM_GRAY_TO_RGB, NULL);
     _width = png_get_image_width(_png_ptr, _info_ptr);
     _height = png_get_image_height(_png_ptr, _info_ptr);
     _channels = png_get_channels(_png_ptr, _info_ptr);
@@ -77,8 +80,6 @@ void Texture::loadTexture()
 }
 
 void Texture::resizeImage(u_int64_t outputWidth, u_int64_t outputHeight) {
-    if (outputWidth == _width && outputHeight == _height)
-        return;
     if (!_pixelsTabResized.empty())
         _pixelsTabResized.clear();
     std::vector<std::vector<pixel_color>> newPixelsTab;
@@ -104,9 +105,214 @@ void Texture::resizeImage(float scale) {
     resizeImage(outputWidth, outputHeight);
 }
 
+void Texture::xShear(double alpha, std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source)
+{
+    u_int width = _widthResized;
+    u_int height = _heightResized;
+
+    OC::Vector2u end = {height, width};
+    std::vector<int> skewis(height);
+    int min_skewi = 0;
+    for (int y = 0; y < height; y++) {
+        double skew = (alpha) * y;
+        int skewi = static_cast<int>(std::floor(skew));
+        skewis[y] = skewi;
+        if (skewi < min_skewi) {
+            min_skewi = skewi;
+        }
+    }
+
+    u_int newWidth = 0;
+    if (min_skewi < 0) {
+        min_skewi = -min_skewi;
+        newWidth = width + min_skewi;
+    } else {
+        min_skewi = 0;
+        int skewi = skewis[height - 1] + min_skewi;
+        OC::x(end) = OC::x(end) + skewi + width;
+        newWidth = std::max(OC::x(end) , width);
+    }
+
+    std::vector<std::vector<pixel_color>> data_out(height, std::vector<pixel_color>(newWidth, pixel_color(0, 0, 0, 0)));
+
+    for (int y = 0; y < height; y++) {
+        double skew = alpha * y;
+        int skewi = skewis[y] + min_skewi;
+        double skewf = skew - skewi;
+        pixel_color oleft;
+
+        for (int x = width - 1; x >= 0; x--) {
+            pixel_color pixel = source[y][x];
+            pixel_color left(pixel.r * skewf, pixel.g * skewf, pixel.b * skewf, pixel.a * skewf);
+
+            pixel.color = (pixel.color - left.color) + oleft.color;
+            if (x + skewi >= 0 && x + skewi < newWidth) {
+                data_out[y][x + skewi] = pixel;
+            }
+            oleft = left;
+        }
+        if (skewi + 1 >= 0 && skewi + 1 < newWidth ) {
+            data_out[y][skewi + 1] = oleft;
+        }
+    }
+
+    target = data_out;
+    _heightResized = target.size();
+    _widthResized = target[0].size();
+}
+
+void Texture::yShear(double beta, std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source)
+{
+    u_int width = _widthResized;
+    u_int height = _heightResized;
+
+    OC::Vector2u end = {height, width};
+
+    std::vector<int> skewis(width);
+    int min_skewi = 0;
+    for (int x = 0; x < width; x++) {
+        double skew = beta * x;
+        int skewi = static_cast<int>(std::floor(skew));
+        skewis[x] = skewi;
+        if (skewi < min_skewi) {
+            min_skewi = skewi;
+        }
+    }
+
+    u_int newHeight = 0;
+    if (min_skewi < 0) {
+        min_skewi = -min_skewi;
+        newHeight = height + min_skewi;
+
+    } else {
+        min_skewi = 0;
+        int skewi = skewis[width - 1] + min_skewi;
+        OC::y(end) = OC::y(end) + skewi + height;
+        newHeight = std::max(OC::y(end) , height);
+
+    }
+
+    std::vector<std::vector<pixel_color>> data_out(newHeight, std::vector<pixel_color>(width , pixel_color(0, 0, 0, 0)));
+
+    for (int x = 0; x < width; x++) {
+        double skew = beta * x;
+        int skewi = skewis[x] + min_skewi;
+        double skewf = skew - skewi;
+        pixel_color oleft;
+
+        for (int y = height - 1; y >= 0; y--) {
+            pixel_color pixel = source[y][x];
+            pixel_color left(pixel.r * skewf, pixel.g * skewf, pixel.b * skewf, pixel.a * skewf);
+
+            pixel.color = (pixel.color - left.color) + oleft.color;
+            if (y + skewi >= 0 && y + skewi < newHeight) {
+                data_out[y + skewi][x] = pixel;
+            }
+            oleft = left;
+        }
+        if (skewi + 1 >= 0 && skewi + 1 < newHeight) {
+            data_out[skewi + 1][x] = oleft;
+        }
+    }
+
+    target = data_out;
+    _heightResized = target.size();
+    _widthResized = target[0].size();
+}
+
+void Texture::mirrorY(std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source)
+{
+    u_int width = _widthResized;
+    u_int height = _heightResized;
+    std::vector<std::vector<pixel_color>> data_out(height, std::vector<pixel_color>(width, pixel_color(0, 0, 0, 0)));
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            data_out[y][x] = source[height - y - 1][x];
+        }
+    }
+    target = data_out;
+    _heightResized = target.size();
+    _widthResized = target[0].size();
+}
+
+void Texture::mirrorX(std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source)
+{
+    u_int width = _widthResized;
+    u_int height = _heightResized;
+    std::vector<std::vector<pixel_color>> data_out(height, std::vector<pixel_color>(width, pixel_color(0, 0, 0, 0)));
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            data_out[y][x] = source[y][width - x - 1];
+        }
+    }
+    target = data_out;
+    _heightResized = target.size();
+    _widthResized = target[0].size();
+}
+
+void Texture::rotate(float angle)
+{
+    double theta = (angle / 180.0) * M_PI;
+    if (theta > (0.5) * M_PI && theta < (1.5) * M_PI) {
+        mirrorY(_pixelsTabResized, _pixelsTabResized);
+        mirrorX(_pixelsTabResized, _pixelsTabResized);
+        theta = theta - M_PI;
+    }
+    double alpha = -tan(theta /2 );
+    double beta = sin(theta);
+
+    std::vector<std::vector<pixel_color>> shearedPixelsTab;
+    int start_y = 0;
+
+    xShear(alpha, shearedPixelsTab, _pixelsTabResized);
+    yShear(beta, shearedPixelsTab, shearedPixelsTab);
+    xShear(alpha, shearedPixelsTab, shearedPixelsTab);
+    for (u_int64_t y = 0; y < _heightResized; y++) {
+        bool isBlack = true;
+        for (u_int64_t x = 0; x < _widthResized; x++) {
+            if ((shearedPixelsTab[y][x]) != pixel_color(0, 0, 0, 0)) {
+                isBlack = false;
+                break;
+            }
+        }
+        if (!isBlack) {
+            start_y = y;
+            break;
+        }
+    }
+
+    int start_x = 0;
+    for (u_int64_t x = 0; x < _widthResized; x++) {
+        bool isBlack = true;
+        for (u_int64_t y = 0; y < _heightResized; y++) {
+            if ((shearedPixelsTab[y][x]) != pixel_color(0, 0, 0, 0)) {
+                isBlack = false;
+                break;
+            }
+        }
+        if (!isBlack) {
+            start_x = x;
+            break;
+        }
+    }
+
+    for (std::vector<pixel_color> &pixel : shearedPixelsTab) {
+        pixel.erase(pixel.begin(), pixel.begin() + start_x);
+    }
+
+    for (int i = 0; i < start_y; i++) {
+        shearedPixelsTab.erase(shearedPixelsTab.begin());
+    }
+
+    _pixelsTabResized = shearedPixelsTab;
+    _heightResized = shearedPixelsTab.size();
+    _widthResized = shearedPixelsTab[0].size();
+}
 
 pixel_color Texture::blendColor(pixel_color bg, pixel_color fg){
-    pixel_color result = {0};
+    pixel_color result;
     float alpha = fg.a / 255.0;
     result.r = bg.r * (1 - alpha) + fg.r * alpha;
     result.g = bg.g * (1 - alpha) + fg.g * alpha;
@@ -117,8 +323,6 @@ pixel_color Texture::blendColor(pixel_color bg, pixel_color fg){
 
 void Texture::loadPixels()
 {
-    if (_channels != 4)
-        throw std::runtime_error("Texture must have 4 channels");
     if (_pixelsTab.size() > 0)
         _pixelsTab.clear();
     for (u_int64_t y = 0; y < _height; y++) {
@@ -126,14 +330,25 @@ void Texture::loadPixels()
         for (u_int64_t x = 0; x < _width; x++) {
             png_byte *ptr = &(_row_pointers[y][x * _channels]);
             pixel_color color;
-            color.r = ptr[0];
-            color.g = ptr[1];
-            color.b = ptr[2];
-            color.a = ptr[3];
+            if (_channels == 3 || _channels == 4) {
+                color.r = ptr[0];
+                color.g = ptr[1];
+                color.b = ptr[2];
+                color.a = (_channels == 4) ? ptr[3] : 255;
+            } else if (_channels == 2) {
+                color.r = color.g = color.b = ptr[0];
+                color.a = ptr[1];
+            } else if (_channels == 1) {
+                color.r = color.g = color.b = ptr[0];
+                color.a = 255;
+            }
             row.push_back(color);
         }
         _pixelsTab.push_back(row);
     }
+    _pixelsTabResized = _pixelsTab;
+    _widthResized = _width;
+    _heightResized = _height;
 }
 
 bool isBlackPixel(pixel_color color) {
@@ -142,8 +357,8 @@ bool isBlackPixel(pixel_color color) {
 
 void Texture::drawTextureRect(Window *win)
 {
-    int i = _posX;
-    int j = _posY;
+    u_int64_t i = _posX;
+    u_int64_t j = _posY;
     for (u_int64_t y = _rect->y; y < _rect->y + _rect->height && y < _heightResized ; y++) {
         for (u_int64_t x = _rect->x; x < _rect->x + _rect->width && x <_widthResized; x++) {
             if (_tint.has_value() && !isBlackPixel(_pixelsTabResized[y][x]))
@@ -160,18 +375,23 @@ void Texture::drawTextureRect(Window *win)
 void Texture::drawTextureResized(Window *win) {
     u_int64_t i = _posX;
     u_int64_t j = _posY;
-    for (u_int64_t y = 0; y < _heightResized; y++) {
-        for (u_int64_t x = 0; x < _widthResized; x++) {
-            if (_tint.has_value() && !isBlackPixel(_pixelsTabResized[y][x])) {
-                pixel_color color = blendColor(_pixelsTabResized[y][x], _tint.value());
+    for (std::vector<pixel_color> pixelLine : _pixelsTabResized) {
+        for (pixel_color pixel : pixelLine) {
+            if (_tint.has_value() && !isBlackPixel(pixel)) {
+                pixel_color color = blendColor(pixel, _tint.value());
                 win->setPixel(i, j, blendColor(win->getPixelColor(i, j), color));
-            } else
-                win->setPixel(i, j, blendColor(win->getPixelColor(i, j), _pixelsTabResized[y][x]));
+            } else {
+                pixel_color color = blendColor(win->getPixelColor(i, j), pixel);
+                win->setPixel(i, j, color);
+            }
             i++;
         }
         j++;
         i = _posX;
     }
+    _pixelsTabResized = _pixelsTab;
+    _widthResized = _width;
+    _heightResized = _height;
 }
 
 void Texture::draw(Window *win) {

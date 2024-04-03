@@ -30,7 +30,6 @@ void Input::readInput(Window *win) {
     char buffer[_nread];
     std::chrono::steady_clock::time_point key_pressed_time;
     std::chrono::steady_clock::time_point key_maintained_time;
-    LOG("KEY PRESSED TIME: " + std::to_string(key_pressed_time.time_since_epoch().count()));
     ssize_t bytesRead = read(win->getFd(), buffer, _nread);
     if (_nread != 0) {
         if (buffer[0] == 27 && buffer[1] == 91) {
@@ -63,7 +62,6 @@ void Input::readInput(Window *win) {
                 if (delay.count() < 0.5) {
                     _key_states[_shared_data] = true;
                 }
-                LOG("Delay: " + std::to_string(delay.count()));
             }
         }
         _key_states[_shared_data] = true;

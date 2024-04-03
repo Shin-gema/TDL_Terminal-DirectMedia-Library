@@ -42,6 +42,8 @@ class Texture {
         void resizeImage(u_int64_t outputWidth, u_int64_t outputHeight);
         void resizeImage(float scale);
 
+        void rotate(float angle);
+
         // Setters
         void setPath(std::string path) { _path = path; }
         void setPos(u_int64_t x, u_int64_t y) { _posX = x; _posY = y; }
@@ -74,12 +76,17 @@ class Texture {
         void loadTexture();
         void loadPixels();
         void drawTextureRect(Window *win);
-        void drawTexture(Window *win);
         void drawTextureResized(Window *win);
         bool is_png(const char* file_path);
         pixel_color blendColor(pixel_color bg, pixel_color fg);
 
-        std::string _path;
+        void xShear(double beta, std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source);
+        void yShear(double beta, std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source);
+
+        void mirrorY(std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source);
+        void mirrorX(std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source);
+
+    std::string _path;
         png_infop _info_ptr;
         png_bytepp _row_pointers;
         png_structp _png_ptr;
