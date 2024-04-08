@@ -79,30 +79,33 @@ void Texture::loadTexture()
     fclose(fp);
 }
 
-void Texture::resizeImage(u_int64_t outputWidth, u_int64_t outputHeight) {
+void Texture::resizeImage(u_int32_t outputWidth, u_int32_t outputHeight) {
     if (!_pixelsTabResized.empty())
         _pixelsTabResized.clear();
-    std::vector<std::vector<pixel_color>> newPixelsTab;
-    newPixelsTab.resize(outputHeight);
-    for (u_int64_t y = 0; y < outputHeight; y++) {
-        newPixelsTab[y].resize(outputWidth);
-        for (u_int64_t x = 0; x < outputWidth; x++) {
-            int x_ratio = (int) ((x * (_width - 1)) / outputWidth);
-            int y_ratio = (int) ((y * (_height - 1)) / outputHeight);
+    std::vector<std::vector<pixel_color>> newPixelsTab(outputHeight, std::vector<pixel_color>(outputWidth, pixel_color(0, 0, 0, 0)));
+    for (u_int32_t y = 0; y < outputHeight; y++) {
+        for (u_int32_t x = 0; x < outputWidth; x++) {
+            int x_ratio = (int) ((x * (_widthResized - 1)) / outputWidth);
+            int y_ratio = (int) ((y * (_heightResized - 1)) / outputHeight);
             pixel_color color;
-            color.color = _pixelsTab[y_ratio][x_ratio].color;
+            color.color = _pixelsTabResized[y_ratio][x_ratio].color;
             newPixelsTab[y][x] = color;
         }
     }
-     _pixelsTabResized = newPixelsTab;
+    _pixelsTabResized = newPixelsTab;
     _widthResized = outputWidth;
     _heightResized = outputHeight;
 }
 
+void Texture::resizeImage(double scaleX, double scaleY) {
+    _swidth = scaleX;
+    _sheight = scaleY;
+}
+
 void Texture::resizeImage(float scale) {
-    int outputWidth = _width * scale;
-    int outputHeight = _height * scale;
-    resizeImage(outputWidth, outputHeight);
+    u_int32_t outputWidth = _widthResized * scale;
+    u_int32_t outputHeight = _heightResized * scale;
+    //resizeImage(outputWidth, outputHeight);
 }
 
 void Texture::xShear(double alpha, std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source)
@@ -224,14 +227,12 @@ void Texture::mirrorY(std::vector<std::vector<pixel_color>> &target, std::vector
 {
     u_int width = _widthResized;
     u_int height = _heightResized;
-    std::vector<std::vector<pixel_color>> data_out(height, std::vector<pixel_color>(width, pixel_color(0, 0, 0, 0)));
 
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            data_out[y][x] = source[height - y - 1][x];
+    for (u_int y = 0; y < height; y++) {
+        for (u_int x = 0; x < width; x++) {
+            target[y][x] = source[height - y - 1][x];
         }
     }
-    target = data_out;
     _heightResized = target.size();
     _widthResized = target[0].size();
 }
@@ -240,14 +241,12 @@ void Texture::mirrorX(std::vector<std::vector<pixel_color>> &target, std::vector
 {
     u_int width = _widthResized;
     u_int height = _heightResized;
-    std::vector<std::vector<pixel_color>> data_out(height, std::vector<pixel_color>(width, pixel_color(0, 0, 0, 0)));
 
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            data_out[y][x] = source[y][width - x - 1];
+    for (u_int y = 0; y < height; y++) {
+        for (u_int x = 0; x < width; x++) {
+            target[y][x] = source[y][width - x - 1];
         }
     }
-    target = data_out;
     _heightResized = target.size();
     _widthResized = target[0].size();
 }
@@ -260,19 +259,20 @@ void Texture::rotate(float angle)
         mirrorX(_pixelsTabResized, _pixelsTabResized);
         theta = theta - M_PI;
     }
-    double alpha = -tan(theta /2 );
+    double alpha = -tan(theta / 2);
     double beta = sin(theta);
 
-    std::vector<std::vector<pixel_color>> shearedPixelsTab;
+    std::vector<std::vector<pixel_color>> shearedPixelsTab = _pixelsTabResized;
     int start_y = 0;
 
-    xShear(alpha, shearedPixelsTab, _pixelsTabResized);
-    yShear(beta, shearedPixelsTab, shearedPixelsTab);
-    xShear(alpha, shearedPixelsTab, shearedPixelsTab);
-    for (u_int64_t y = 0; y < _heightResized; y++) {
+    xShear(alpha, _pixelsTabResized, _pixelsTabResized);
+    yShear(beta, _pixelsTabResized, _pixelsTabResized);
+    xShear(alpha, _pixelsTabResized, _pixelsTabResized);
+
+    for (u_int32_t y = 0; y < _heightResized; y++) {
         bool isBlack = true;
-        for (u_int64_t x = 0; x < _widthResized; x++) {
-            if ((shearedPixelsTab[y][x]) != pixel_color(0, 0, 0, 0)) {
+        for (u_int32_t x = 0; x < _widthResized; x++) {
+            if ((_pixelsTabResized[y][x]) != pixel_color(0, 0, 0, 0)) {
                 isBlack = false;
                 break;
             }
@@ -284,10 +284,10 @@ void Texture::rotate(float angle)
     }
 
     int start_x = 0;
-    for (u_int64_t x = 0; x < _widthResized; x++) {
+    for (u_int32_t x = 0; x < _widthResized; x++) {
         bool isBlack = true;
-        for (u_int64_t y = 0; y < _heightResized; y++) {
-            if ((shearedPixelsTab[y][x]) != pixel_color(0, 0, 0, 0)) {
+        for (u_int32_t y = 0; y < _heightResized; y++) {
+            if ((_pixelsTabResized[y][x]) != pixel_color(0, 0, 0, 0)) {
                 isBlack = false;
                 break;
             }
@@ -298,17 +298,16 @@ void Texture::rotate(float angle)
         }
     }
 
-    for (std::vector<pixel_color> &pixel : shearedPixelsTab) {
+    for (std::vector<pixel_color> &pixel : _pixelsTabResized) {
         pixel.erase(pixel.begin(), pixel.begin() + start_x);
     }
 
     for (int i = 0; i < start_y; i++) {
-        shearedPixelsTab.erase(shearedPixelsTab.begin());
+        _pixelsTabResized.erase(_pixelsTabResized.begin());
     }
 
-    _pixelsTabResized = shearedPixelsTab;
-    _heightResized = shearedPixelsTab.size();
-    _widthResized = shearedPixelsTab[0].size();
+    _heightResized = _pixelsTabResized.size();
+    _widthResized = _pixelsTabResized[0].size();
 }
 
 pixel_color Texture::blendColor(pixel_color bg, pixel_color fg){
@@ -325,9 +324,9 @@ void Texture::loadPixels()
 {
     if (_pixelsTab.size() > 0)
         _pixelsTab.clear();
-    for (u_int64_t y = 0; y < _height; y++) {
+    for (u_int32_t y = 0; y < _height; y++) {
         std::vector<pixel_color> row;
-        for (u_int64_t x = 0; x < _width; x++) {
+        for (u_int32_t x = 0; x < _width; x++) {
             png_byte *ptr = &(_row_pointers[y][x * _channels]);
             pixel_color color;
             if (_channels == 3 || _channels == 4) {
@@ -357,10 +356,10 @@ bool isBlackPixel(pixel_color color) {
 
 void Texture::drawTextureRect(Window *win)
 {
-    u_int64_t i = _posX;
-    u_int64_t j = _posY;
-    for (u_int64_t y = _rect->y; y < _rect->y + _rect->height && y < _heightResized ; y++) {
-        for (u_int64_t x = _rect->x; x < _rect->x + _rect->width && x <_widthResized; x++) {
+    u_int32_t i = _posX;
+    u_int32_t j = _posY;
+    for (u_int32_t y = _rect->y; y < _rect->y + _rect->height && y < _heightResized ; y++) {
+        for (u_int32_t x = _rect->x; x < _rect->x + _rect->width && x <_widthResized; x++) {
             if (_tint.has_value() && !isBlackPixel(_pixelsTabResized[y][x]))
                 win->setPixel(i,j, blendColor(win->getPixelColor(i, j), blendColor(_pixelsTabResized[y][x], _tint.value())));
             else
@@ -372,16 +371,40 @@ void Texture::drawTextureRect(Window *win)
     }
 }
 
+void Texture::crop(textureRect rect)
+{
+    if (rect.x + rect.width > _width || rect.y + rect.height > _height)
+        throw std::runtime_error("Invalid crop");
+    std::vector<std::vector<pixel_color>> newPixelsTab;
+    newPixelsTab.resize(rect.height);
+    for (u_int32_t y = rect.y; y < rect.y + rect.height; y++) {
+        newPixelsTab[y - rect.y].resize(rect.width);
+        for (u_int32_t x = rect.x; x < rect.x + rect.width; x++) {
+            newPixelsTab[y - rect.y][x - rect.x] = _pixelsTab[y][x];
+        }
+    }
+    _pixelsTabResized = newPixelsTab;
+    _widthResized = rect.width;
+    _heightResized = rect.height;
+
+}
+
 void Texture::drawTextureResized(Window *win) {
-    u_int64_t i = _posX;
-    u_int64_t j = _posY;
-    for (std::vector<pixel_color> pixelLine : _pixelsTabResized) {
-        for (pixel_color pixel : pixelLine) {
-            if (_tint.has_value() && !isBlackPixel(pixel)) {
-                pixel_color color = blendColor(pixel, _tint.value());
+    u_int32_t i = _posX;
+    u_int32_t j = _posY;
+    if (_rect.has_value())
+        crop(_rect.value());
+    u_int32_t width = _widthResized * _swidth;
+    u_int32_t height = _heightResized * _sheight;
+    if (!_doNotRescale)
+        resizeImage(width + 1, height + 1);
+    for (u_int32_t y = 0; y < _heightResized; y++) {
+        for (u_int32_t x = 1; x < _widthResized; x++) {
+            if (_tint.has_value() && !isBlackPixel(_pixelsTabResized[y][x])) {
+                pixel_color color = blendColor(_pixelsTabResized[y][x], _tint.value());
                 win->setPixel(i, j, blendColor(win->getPixelColor(i, j), color));
             } else {
-                pixel_color color = blendColor(win->getPixelColor(i, j), pixel);
+                pixel_color color = blendColor(win->getPixelColor(i, j), _pixelsTabResized[y][x]);
                 win->setPixel(i, j, color);
             }
             i++;
@@ -389,14 +412,10 @@ void Texture::drawTextureResized(Window *win) {
         j++;
         i = _posX;
     }
-    _pixelsTabResized = _pixelsTab;
-    _widthResized = _width;
-    _heightResized = _height;
+
+
 }
 
 void Texture::draw(Window *win) {
-    if (_rect.has_value())
-        drawTextureRect(win);
-    else
         drawTextureResized(win);
 }

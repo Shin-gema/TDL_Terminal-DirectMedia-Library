@@ -5,7 +5,7 @@
 ** EInput.cpp
 */
 
-enum KeyCodes {
+enum NCursesKeyCodes {
     KEY_UP = 65,
     KEY_DOWN = 66,
     KEY_RIGHT = 67,
@@ -13,7 +13,7 @@ enum KeyCodes {
     KEY_SPACE = 32,
     KEY_ENTER = 10,
     KEY_ESC = 27,
-    KEY_BACKSPACE = 127,
+    KEY_BACKSPACE = 8,
     KEY_TAB = 9,
     KEY_A = 97,
     KEY_B = 98,
@@ -50,5 +50,8 @@ enum KeyCodes {
     KEY_6 = 54,
     KEY_7 = 55,
     KEY_8 = 56,
-    KEY_9 = 57
+    KEY_9 = 57,
+    KEY_END = 360,
 };
+
+extern std::vector <NCursesKeyCodes> keysList;
