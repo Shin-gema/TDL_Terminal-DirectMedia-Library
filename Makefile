@@ -7,8 +7,7 @@
 
 SRC = $(wildcard *.cpp) \
 	$(wildcard window/*.cpp) \
-	$(wildcard texture/*.cpp) \
-	$(wildcard shape/*.cpp) \
+	$(wildcard texture/src/*.cpp) \
 	$(wildcard input_management/*.cpp) \
 	$(wildcard logger/*.cpp) \
 	$(wildcard testing/*.cpp) \

@@ -30,30 +30,20 @@ void setAnimeTexture(Texture *texture)
     texture->setTextureRect(rect);
 }
 
-void textureBouncWall(Texture *texture, Window *win) {
-
+void textureBouncWall(Texture *texture, Window *win)
+{
     Input input = Input();
     int x = 50;
     int y = 50;
     float i = 0.0;
     while (1) {
         input.readInput(win);
-        if (input.on_pressed(KEY_ESC))
-            break;
-        win->updateTermSize();
         win->clearPixel();
-        if (input.on_pressed(KEY_D))
-            x += 1;
-        if (input.on_pressed(KEY_Q))
-            x -= 1;
-        if (input.on_pressed(KEY_Z))
-            y -= 1;
-        if (input.on_pressed(KEY_S))
-            y += 1;
-        texture->rotate(i);
-        i += 1;
-        if (i > 360)
+        if (i < 360)
+            i += 0.1;
+        else
             i = 0;
+        texture->setPos(x, y);
         texture->draw(win);
         win->update();
         win->draw();
@@ -62,8 +52,8 @@ void textureBouncWall(Texture *texture, Window *win) {
 
 int main()
 {
-    Window win("test");
-    Texture texture("./testing/Spinner.png");
+    Window win = Window("Test");
+    Texture texture("./testing/Spinner.png", {0, 0, 32, 32});
     texture.setPos(0, 0);
     win.disableEcho();
     win.removeMouseCursor();
