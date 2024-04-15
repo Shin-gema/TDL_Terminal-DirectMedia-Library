@@ -8,57 +8,42 @@
 #include <iostream>
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include "../window/window.hpp"
-#include "../texture/texture.hpp"
-#include "../input_management/input.hpp"
+#include "../include/Window/window.hpp"
+#include "../include/Event/Event.hpp"
+#include "../include/Input/inputKeyboard.hpp"
+#include "Vector.hpp"
 #include "../logger/logger.hpp"
 #include <png.h>
 #include <tuple>
+#include <queue>
 
-void setAnimeTexture(Texture *texture)
-{
-    textureRect rect = texture->getRect().value();
-    if (rect.x + 32 < texture->getWidth() - 32)
-        rect.x += 32;
-    else {
-        rect.x = 0;
-        if (rect.y + 32 < texture->getHeight())
-            rect.y += 32;
-        else
-            rect.y = 0;
-    }
-    texture->setTextureRect(rect);
-}
 
-void textureBouncWall(Texture *texture, Window *win)
-{
-    Input input = Input();
-    int x = 50;
-    int y = 50;
-    float i = 0.0;
-    while (1) {
-        input.readInput(win);
-        win->clearPixel();
-        if (i < 360)
-            i += 0.1;
-        else
-            i = 0;
-        texture->setPos(x, y);
-        texture->draw(win);
-        win->update();
-        win->draw();
-    }
-}
 
 int main()
 {
-    Window win = Window("Test");
-    Texture texture("./testing/Spinner.png", {0, 0, 32, 32});
-    texture.setPos(0, 0);
-    win.disableEcho();
-    win.removeMouseCursor();
-    win.alternateScreenBuffer();
-    win.create_window();
-    textureBouncWall(&texture, &win);
-    return 0;
+    tdl::Window *win = tdl::Window::CreateWindow("test");
+    tdl::Vector2u pos = tdl::Vector2u(10, 10);
+    while (true)
+    {
+        win->clearPixel();
+        for (tdl::Event event; win->pollEvent(event);){
+            if (event.type == tdl::Event::EventType::KeyPressed){
+                if (event.key.key == tdl::TDLKeyCodes::KEY_UP){
+                    tdl::y(pos) -= 1;
+                }
+                if (event.key.key == tdl::TDLKeyCodes::KEY_DOWN){
+                    tdl::y(pos) += 1;
+                }
+                if (event.key.key == tdl::TDLKeyCodes::KEY_LEFT){
+                    tdl::x(pos) -= 1;
+                }
+                if (event.key.key == tdl::TDLKeyCodes::KEY_RIGHT){
+                    tdl::x(pos) += 1;
+                }
+            }
+        }
+        win->setPixel(pos, tdl::Pixel(255, 0, 0, 255));
+        win->update();
+        win->draw();
+    }
 }

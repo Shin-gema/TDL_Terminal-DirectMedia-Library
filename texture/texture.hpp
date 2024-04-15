@@ -12,6 +12,7 @@
 #include <png.h>
 #include <vector>
 #include "../window/window.hpp"
+#include "Vector.hpp"
 #include <optional>
 #include "Vector.hpp"
 
@@ -81,18 +82,6 @@ class Texture {
         void xShear(double beta, std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source);
         void yShear(double beta, std::vector<std::vector<pixel_color>> &target, std::vector<std::vector<pixel_color>> &source);
         void resizeImage(u_int32_t outputWidth, u_int32_t outputHeight);
-
-
-
-        //png variables
-        std::string _path;
-        png_infop _info_ptr;
-        png_bytepp _row_pointers;
-        png_structp _png_ptr;
-        u_int32_t _width;
-        u_int32_t _height;
-        int _channels;
-        int _bit_depth;
 
         //texture position and rect variables
         u_int32_t _posX = 0;

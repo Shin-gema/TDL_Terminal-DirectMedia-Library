@@ -6,11 +6,14 @@
 ##
 
 SRC = $(wildcard *.cpp) \
+	$(wildcard source/Window/*.cpp) \
+	$(wildcard source/Pixel/*.cpp) \
+	$(wildcard source/Signal/*.cpp) \
+	$(wildcard source/Input/*.cpp) \
 	$(wildcard window/*.cpp) \
-	$(wildcard texture/src/*.cpp) \
-	$(wildcard input_management/*.cpp) \
 	$(wildcard logger/*.cpp) \
 	$(wildcard testing/*.cpp) \
+	$(wildcard include/Window/*.cpp)
 
 OBJ = $(SRC:.cpp=.o)
 
@@ -18,12 +21,12 @@ NAME = libncurse
 
 CXX = g++
 
-CXXFLAGS = -Wall -Wextra -lpng
+CXXFLAGS = -Wall -Wextra -lpng -I include/
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CXX) -o $(NAME) $(OBJ) $(CXXFLAGS)
+	$(CXX) -o $(NAME) $(OBJ) $(CXXFLAGS) 
 
 clean:
 	rm -f $(OBJ)
