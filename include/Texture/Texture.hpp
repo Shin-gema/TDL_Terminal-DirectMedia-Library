@@ -26,6 +26,10 @@ namespace tdl {
             void setScale(Vector2f scale) {_scale = scale;}
             void setRepeat(bool repeat) { _repeat = repeat;}
 
+            Vector2f getScale() {return _scale;}
+            
+            Pixel getPixel(Vector2u pos);
+
         private : 
             Texture(std::string path, Vector2f scale, bool repeat);
 

@@ -9,14 +9,16 @@
 
 namespace tdl {
     class TextureLoader {
+        public : 
+            Vector2u getSize() { return _size; }
+
         protected :
             TextureLoader(std::string path);
             ~TextureLoader();
             void loadTexture();
             void loadTexture(std::string path);
-
-        protected :
-            bool isPng(FILE *fd);
+            bool isPng(std::string path);
+            
             //png variables
             std::string _path;
             png_infop _info_ptr;

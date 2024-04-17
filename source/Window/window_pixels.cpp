@@ -28,7 +28,6 @@ void tdl::Window::clearPixel()
 void tdl::Window::setPixel(Vector2u pos, Pixel color)
 {
     if (x(pos) >= x(_size) || y(pos) >= y(_size)) {
-        std::cerr << "Error: position out of range" << std::endl;
         return;
     }
     getPixel(pos) = color;
@@ -49,8 +48,7 @@ void tdl::Window::updateTermSize()
         ioctl(_fd, TIOCGWINSZ, &w);
         timeout--;
     }
-    x(_size) = (w.ws_col + 1);
-    y(_size) = ((w.ws_row + 1) * 2);
+    _size = Vector2u((w.ws_col + 1), ((w.ws_row + 1) * 2));
     _pixelsTab.resize(x(_size) * y(_size) , Pixel( 0, 0, 0,  255));
     _oldPixelsTab.resize(x(_size) * y(_size), Pixel(0, 0, 0, 255));
     update(true);

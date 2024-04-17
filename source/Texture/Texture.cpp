@@ -16,7 +16,7 @@ namespace tdl {
      */
     Texture *Texture::createTexture(std::string path)
     {
-        return new Texture(path, Vector2f(1, 1), false);
+        return createTexture(path, Vector2f(1.0, 1.0), false);
     }
 
     /**
@@ -29,7 +29,7 @@ namespace tdl {
      */
     Texture *Texture::createTexture(std::string path, Vector2f scale)
     {
-        return new Texture(path, scale, false);
+        return createTexture(path, scale, false);
     }
 
     /**
@@ -42,7 +42,7 @@ namespace tdl {
      */
     Texture *Texture::createTexture(std::string path, bool repeat)
     {
-        return new Texture(path, Vector2f(1, 1), repeat);
+        return createTexture(path, Vector2f(1.0, 1.0), repeat);
     }
 
     /**
@@ -55,7 +55,12 @@ namespace tdl {
      */
     Texture *Texture::createTexture(std::string path, Vector2f scale, bool repeat)
     {
-        return new Texture(path, scale, repeat);
+        try {
+            return new Texture(path, scale, repeat);
+        } catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
+        }
+        return nullptr;
     }
 
     /**
@@ -85,7 +90,7 @@ namespace tdl {
     void Texture::loadPixels()
     {
         if (_pixelData.size() > 0)
-        _pixelData.clear();
+            _pixelData.clear();
         for (u_int32_t y = 0; y < tdl::y(_size); y++) {
             std::vector<Pixel> row;
             for (u_int32_t x = 0; x < tdl::x(_size); x++) {
@@ -118,17 +123,27 @@ namespace tdl {
         if (x(endSize) == 0 || y(endSize) == 0)
             std::cerr << "Width and Height must be greater than 0" << std::endl;
         else {
-            if (!_pixelData.empty())
-                _pixelData.clear();
-            std::vector<std::vector<Pixel>> newPixelsTab(y(endSize), std::vector<Pixel>(x(endSize),Pixel(0, 0, 0,0)));
+            std::vector<std::vector<Pixel>> newPixelsTab(y(endSize), std::vector<Pixel>(x(endSize),Pixel(0, 0, 0, 255)));
             for (u_int32_t y = 0; y < tdl::y(endSize); y++) {
                 for (u_int32_t x = 0; x < tdl::x(endSize); x++) {
                     int x_ratio = (int) ((x * (tdl::x(_size) - 1)) / tdl::x(endSize));
                     int y_ratio = (int) ((y * (tdl::y(_size) - 1)) / tdl::y(endSize));
-                    Pixel color = _pixelData[y_ratio][x_ratio];
-                    newPixelsTab[y][x] = color;
+                    newPixelsTab[y][x] = _pixelData[y_ratio][x_ratio];
                 }
             }
+            _pixelData = newPixelsTab;
+            _size = endSize;
         }
+    }
+
+    /**
+     * @brief get the pixel at the position pos
+     * 
+     * @param pos the position of the pixel
+     * @return Pixel the pixel at the position pos
+     */
+    Pixel Texture::getPixel(Vector2u pos)
+    {
+        return _pixelData[y(pos)][x(pos)];
     }
 }   

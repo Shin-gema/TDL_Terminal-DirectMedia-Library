@@ -44,7 +44,7 @@ namespace tdl
      * @return T& the x value of the vector
      */
     template<typename T>
-    inline T &x(Vector2<T> &v)
+    inline T x(Vector2<T> v)
     {
         return std::get<0>(v);
     }
@@ -57,11 +57,11 @@ namespace tdl
      * @return T& the y value of the vector
      */
     template<typename T>
-    inline T &y(Vector2<T> &v)
+    inline T y(Vector2<T> v)
     {
         return std::get<1>(v);
     }
-
+    
     template<typename T>
     inline Vector2<T> operator+(const Vector2<T> &lhs, const Vector2<T> &rhs)
     {

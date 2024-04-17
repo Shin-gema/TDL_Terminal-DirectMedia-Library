@@ -1,3 +1,7 @@
 log.txt
 *.o
 POC
+.vscode
+vgcore*
+libncurse
+log
