@@ -16,7 +16,7 @@ namespace tdl {
          * it permited to register the key that is pressed or released
          */
         struct keyEvent {
-            TDLKeyCodes key;
+            TDLKeyCodes code;
         };
 
         /**

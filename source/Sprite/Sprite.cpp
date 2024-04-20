@@ -5,6 +5,8 @@
 #include "Pixel/Pixel.hpp"
 #include "Window/window.hpp"
 #include <optional>
+#include <algorithm>
+#include <cmath>
 
 /**
  * @brief Create a Sprite object
@@ -80,8 +82,24 @@ bool tdl::Sprite::isBlackPixel(Pixel pixel)
     return static_cast<uint8_t>(GET_R(pixel.color)) == 0 && static_cast<uint8_t>(GET_G(pixel.color)) == 0 && static_cast<uint8_t>(GET_B(pixel.color)) == 0;
 }
 
+tdl::Pixel tdl::Sprite::lerp(tdl::Pixel a, tdl::Pixel b, double t) {
+    return tdl::Pixel(
+        static_cast<uint8_t>((1 - t) * GET_R(a.color) + t * GET_R(b.color)),
+        static_cast<uint8_t>((1 - t) * GET_G(a.color) + t * GET_G(b.color)),
+        static_cast<uint8_t>((1 - t) * GET_B(a.color) + t * GET_B(b.color)),
+        static_cast<uint8_t>((1 - t) * GET_A(a.color) + t * GET_A(b.color))
+    );
+}
+
 /**
  * @brief draw the sprite on the window
+ * This is the main function of the sprite it will draw the sprite according to the variable set in the sprite class
+ * this is what is handle :
+ * - the position of the sprite
+ * - the rect of the sprite
+ * - the tint of the sprite
+ * - the rotation of the sprite
+ * - the texture of the sprite and his repetition
  * 
  * @param window the window to draw the sprite on
  */
@@ -91,28 +109,39 @@ void tdl::Sprite::drawOn(Window *window)
     u_int32_t j = y(_pos);
     u_int32_t width = tdl::width(_rect);
     u_int32_t height = tdl::height(_rect);
-    u_int32_t size_x = tdl::x(_texture->getSize());
-    u_int32_t size_y = tdl::y(_texture->getSize());
+
+    RectU textureRect =_texture->getRect();
 
     static tdl::Vector2f saveScale = Vector2f(1.0, 1.0);
     if (_texture->getScale() != saveScale) {
         _texture->resizeImage();
         saveScale = _texture->getScale();
-        size_x = tdl::x(_texture->getSize());
-        size_y = tdl::y(_texture->getSize());
     }
+    double centerX = (width / 2);
+    double centerY = (height / 2);
+    double theta = _rotation * M_PI / 180;
 
-    for (u_int32_t y = tdl::y(_rect); y < height + tdl::y(_rect) && y < size_y; y++) {
-        for (u_int32_t x = tdl::x(_rect); x < width + tdl::x(_rect) && x < size_x; x++) {
-            if (_tint.has_value() && !isBlackPixel(_texture->getPixel(Vector2u(x, y)))) {
-                Pixel color = window->getPixel(Vector2u(i, j)) + _texture->getPixel(Vector2u(x, y)) + _tint.value();
-                window->setPixel(Vector2u(i, j), color);
-            } else {
-                tdl::Pixel color = window->getPixel(Vector2u(i, j)) + _texture->getPixel(Vector2u(x, y));
-                window->setPixel(Vector2u(i, j), color);
-            }
+    for (u_int32_t y = tdl::y(textureRect), y_tot = tdl::y(textureRect); y_tot < height + tdl::y(textureRect); y++, y_tot++) {
+        for (u_int32_t x = tdl::x(textureRect), x_tot = tdl::x(textureRect); x_tot < width + tdl::x(textureRect); x++, x_tot++) {
+            double xRot = (i - centerX) * cos(theta) - (j - centerY) * sin(theta) + centerX;
+            double yRot = (i - centerX) * sin(theta) + (j - centerY) * cos(theta) + centerY;
+
+            tdl::Pixel color = window->getPixel(Vector2u(i, j)) + _texture->getPixel(Vector2u(x, y));
+            if (!isBlackPixel(color) && _tint.has_value())
+                color = color + _tint.value();
+            window->setPixel(Vector2u(floor(xRot), floor(yRot)), color);
+            window->setPixel(Vector2u(ceil(xRot), floor(yRot)), color);
+
+            if ((x >= tdl::width(textureRect) + tdl::x(textureRect) - 1) && !_texture->getRepeat())
+                break;
+            if ((x >= tdl::width(textureRect) + tdl::x(textureRect) - 1) && _texture->getRepeat())
+                x = tdl::x(textureRect);
             i++;
         }
+        if ( y >= tdl::height(textureRect) + tdl::y(textureRect) - 1 && !_texture->getRepeat())
+            break;
+        if (( y >= tdl::height(textureRect)+ tdl::y(textureRect) - 1 ) && _texture->getRepeat())
+            y = tdl::y(textureRect);
         i = x(_pos);
         j++;
     }

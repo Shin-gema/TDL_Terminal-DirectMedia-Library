@@ -48,6 +48,7 @@ void tdl::Window::moveCursor(Vector2u pos)
  */
 void tdl::Window::printPixel()
 {
+    //_content += std::string(reinterpret_cast<const char*>("A"));
     _content += std::string(reinterpret_cast<const char*>(u8"\u2584"));
 }
 

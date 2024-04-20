@@ -11,6 +11,8 @@ namespace tdl {
     }
 
     Pixel Pixel::operator+(const Pixel &other) const {
+        if (GET_A(other.color) == 0)
+            return *this;
         float alpha = GET_A(color) / 255.0;
         uint8_t r = GET_R(color) * (1 - alpha) + GET_R(other.color) * alpha;
         uint8_t g = GET_G(color) * (1 - alpha) + GET_G(other.color) * alpha;
@@ -20,6 +22,8 @@ namespace tdl {
     }
 
     Pixel Pixel::operator-(const Pixel &other) const {
+        if (GET_A(other.color) == 0)
+            return *this;
         float alpha = GET_A(color) / 255.0;
         uint8_t r = GET_R(color) * (1 - alpha) - GET_R(other.color) * alpha;
         uint8_t g = GET_G(color) * (1 - alpha) - GET_G(other.color) * alpha;

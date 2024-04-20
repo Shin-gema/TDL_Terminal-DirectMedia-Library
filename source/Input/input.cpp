@@ -10,7 +10,6 @@
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <termios.h>
-#include "../logger/logger.hpp"
 #include "Window/windowBase.hpp"
 #include <vector>
 
@@ -58,7 +57,7 @@ void tdl::InputKeyboard::readInputKeyboard(WindowBase *win) {
         _key_states[_shared_data] = true;
         Event event;
         event.type = Event::EventType::KeyPressed;
-        event.key.key = _shared_data;
+        event.key.code = _shared_data;
         win->pushEvent(event);
     } else {
         for (auto &key: _key_states) {
@@ -67,7 +66,7 @@ void tdl::InputKeyboard::readInputKeyboard(WindowBase *win) {
                 key.second = false;
                 Event event;
                 event.type = Event::EventType::KeyReleased;
-                event.key.key = charToKeyCodes(key.first);
+                event.key.code = charToKeyCodes(key.first);
                 win->pushEvent(event);
             } else {
                 _prev_key_states[key.first] = false;

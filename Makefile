@@ -12,8 +12,7 @@ SRC = $(wildcard *.cpp) \
 	$(wildcard source/Input/*.cpp) \
 	$(wildcard source/Texture/*.cpp)\
 	$(wildcard source/Sprite/*.cpp) \
-	$(wildcard logger/*.cpp) \
-	$(wildcard testing/*.cpp) \
+	$(wildcard exemple/*.cpp) \
 
 OBJ = $(SRC:.cpp=.o)
 

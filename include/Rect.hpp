@@ -34,5 +34,12 @@ namespace tdl {
     {
         return std::get<3>(v);
     }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, Rect<T> &rect)
+    {
+        os << "Rect(" << std::to_string(x(rect)) << ", " << std::to_string(y(rect)) << ", " << std::to_string(width(rect)) << ", " << std::to_string(height(rect)) << ")";
+        return os;
+    }
 }
 #endif //LIBNCURSE_RECT_HPP

@@ -56,7 +56,7 @@ namespace tdl {
             void removeMouseCursor();
 
             std::string _title;
-            u_int8_t _frameRate;
+            u_int8_t _frameRate = 60;
             std::string _content;
             Vector2u _size;
             struct termios _tty;

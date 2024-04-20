@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <vector>
-#include "../logger/logger.hpp"
 #include <fcntl.h>
 #include <termios.h>
 #include <csignal>

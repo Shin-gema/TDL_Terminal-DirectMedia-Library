@@ -54,7 +54,7 @@ void tdl::SignalHandler::handleSignal(int sig)
 
 /**
  * @brief the instance off the signal recieve
- * this manage a
+ * this manage all the window registered to the signal handler
  * 
  */
 void tdl::SignalHandler::handleSignalInstance()

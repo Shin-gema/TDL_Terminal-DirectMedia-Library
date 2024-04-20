@@ -25,9 +25,11 @@ namespace tdl {
 
             void setScale(Vector2f scale) {_scale = scale;}
             void setRepeat(bool repeat) { _repeat = repeat;}
+            void setRect(RectU rect) {_rect = rect;}
 
             Vector2f getScale() {return _scale;}
-            
+            bool getRepeat() {return _repeat;}
+            RectU getRect() {return _rect;}
             Pixel getPixel(Vector2u pos);
 
         private : 
@@ -36,6 +38,7 @@ namespace tdl {
             std::vector<std::vector<Pixel>> _pixelData;
             Vector2f _scale;
             bool _repeat;
+            RectU _rect;
     };
 }
 #endif // TEXTURE_HPP

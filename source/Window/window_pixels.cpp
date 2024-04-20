@@ -1,5 +1,4 @@
 #include "Window.hpp"
-#include "../logger/logger.hpp"
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <termios.h>
