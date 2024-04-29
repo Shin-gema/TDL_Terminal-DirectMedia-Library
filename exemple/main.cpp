@@ -17,8 +17,6 @@
 #include <tuple>
 #include <queue>
 
-
-
 int main()
 {
     tdl::Window *win = tdl::Window::CreateWindow("test");
@@ -28,7 +26,6 @@ int main()
     tdl::RectU textRect = tdl::RectU(0, 0, 32, 32);
     tdl::Sprite *sprite = tdl::Sprite::createSprite(tex, pos, rect);
     tex->setRect(textRect);
-    //sprite->setTint(tdl::Pixel(0, 255, 0, 100));
 
     double rotation = 0;
     while (true)

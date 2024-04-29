@@ -1,34 +1,36 @@
-# TDL (Terminal Direct Media Library)
+# TDL — Terminal Direct Media Library
 
 ## Description
 
-TDL is graphical library inside an terminal.
+TDL is graphical library inside a terminal.
 
-The purpose of the project is to permited all or at least the majority of the functionnality of standard graphic library like sdl or sfml.
-With this library, you can load png picture and display on the terminal. you can resize, make some animation and rotation with them.
+The purpose of this project is to permitted the majority of the functionality of standard graphic libraries like SDL or SFML inside a terminal. It is written and usable in C++.
 
-You can also cath input from the keyboard and use some event like the resize of the terminal. 
+## State of Developpement
 
-## Installation
+Development is focused in adding new feature and improve the C++ Library. You can check the list below for a better view of what is left to add for the official v1.0.
 
-To install Opti_curse, follow these steps:
+### RoadMap V1.0
+- [x] Implement window class for terminal display
+- [x] Implement texture and sprite management
+- [x] Implement event handler
+- [x] Implement keyboard input manager
+- [ ] Implement music and sound solution
+- [ ] Implement Text method.
+- [ ] Implement multi window method
+- [ ] Implement new image loading solution. (actually only PNG is handle)
 
-1. ...
-2. ...
-
-## Usage
-
-To use Opti_curse, follow these steps:
-
-1. ...
-2. ...
+## External library used
+- [libpng](https://github.com/pnggroup/libpng) under [png library licence](https://spdx.org/licenses/libpng-2.0.html)
+licence](https://spdx.org/licenses/libpng-2.0.html)
 
 ## Contributing
 
-To contribute to Opti_curse, follow these steps:
+ If you want to contribute to this project, you can simply follow this step :
 
-1. Fork this repository.
-2. Create a branch: `git checkout -b <branch_name>`.
-3. Make your changes and commit them: `git commit -m '<commit_message>'`
-4. Push to the original branch: `git push origin <project_name>/<location>`
-5. Create the pull request.
+- Fork this repository
+## Contributing
+
+ If you want to contribute to this project, you can simply follow this step :
+
+- Fork this repository
