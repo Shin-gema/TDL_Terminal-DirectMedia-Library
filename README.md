@@ -1,8 +1,13 @@
-# Opti_curse
+# TDL (Terminal Direct Media Library)
 
 ## Description
 
-Opti_curse is a project that ...
+TDL is graphical library inside an terminal.
+
+The purpose of the project is to permited all or at least the majority of the functionnality of standard graphic library like sdl or sfml.
+With this library, you can load png picture and display on the terminal. you can resize, make some animation and rotation with them.
+
+You can also cath input from the keyboard and use some event like the resize of the terminal. 
 
 ## Installation
 
