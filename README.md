@@ -22,7 +22,6 @@ Development is focused in adding new feature and improve the C++ Library. You ca
 
 ## External library used
 - [libpng](https://github.com/pnggroup/libpng) under [png library licence](https://spdx.org/licenses/libpng-2.0.html)
-licence](https://spdx.org/licenses/libpng-2.0.html)
 
 ## Contributing
 
