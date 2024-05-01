@@ -16,8 +16,17 @@
 #include "Pixel/Pixel.hpp"
 #include "Vector.hpp"
 #include "Window/windowBase.hpp"
+#include "Matrix/PixelMatrix.hpp"
 
 namespace tdl {
+
+
+    struct CharColor {
+        const char *shape;
+        Pixel ForeGround;
+        Pixel BackGround;
+    };
+
     class Window : public WindowBase {
         
         public:
@@ -26,16 +35,16 @@ namespace tdl {
 
             // pixel management
             void clearPixel();
-            void setPixel(Vector2u pos, Pixel color);
+            CharColor computeCharColor(Vector2u pos);
             void update(bool all = false);
             void draw();
 
             // getter and setter
             [[nodiscard]] u_int32_t getHeight() { return y(_size); }
             [[nodiscard]] u_int32_t getWidth() { return x(_size); }
-            [[nodiscard]] Pixel &getPixel(Vector2u pos);
-            [[nodiscard]] Pixel &getOldPixel(Vector2u pos);
             [[nodiscard]] u_int8_t getFrameRate() const { return _frameRate; }
+            [[nodiscard]] PixelMatrix &getPixelsTab() { return _pixelsTab;}
+            [[nodiscard]] PixelMatrix &getOldPixelsTab() { return _oldPixelsTab; }
 
             void setFrameRate(u_int8_t frameRate) { _frameRate = frameRate; }
 
@@ -51,7 +60,7 @@ namespace tdl {
             void setRGBBackGround(Pixel color);
             void clearScreen();
             void moveCursor(Vector2u pos);
-            void printPixel();
+            void printPixel(const char *shape);
             void alternateScreenBuffer();
             void removeMouseCursor();
 
@@ -60,8 +69,8 @@ namespace tdl {
             std::string _content;
             Vector2u _size;
             struct termios _tty;
-            std::vector<Pixel> _pixelsTab;
-            std::vector<Pixel> _oldPixelsTab;
+            PixelMatrix _pixelsTab;
+            PixelMatrix _oldPixelsTab;
 
     };
 }

@@ -85,6 +85,13 @@ namespace tdl
     {
         return {std::get<0>(lhs) / std::get<0>(rhs), std::get<1>(lhs) / std::get<1>(rhs)};
     }
+
+    template<typename T>
+    inline Vector2<T> operator+=(Vector2<T> &lhs, const Vector2<T> &rhs)
+    {
+        lhs = lhs + rhs;
+        return lhs;
+    }
 }
 
 #endif //LIBNCURSE_VECTOR_HPP

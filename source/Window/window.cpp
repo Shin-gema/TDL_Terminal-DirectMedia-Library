@@ -8,6 +8,7 @@
 #include <csignal>
 #include "Window/windowBase.hpp"
 #include "Signal/SignalHandler.hpp"
+#include "Matrix/PixelMatrix.hpp"
 
 /**
  * @brief Construct a new tdl::Window::Window object
@@ -27,9 +28,9 @@ tdl::Window::Window(std::string const title, std::string const ttyPath) :WindowB
         throw std::runtime_error("Can't get terminal size");
     param = ioctl(_fd, F_GETFL, 0);
     fcntl(_fd, F_SETFL, param | O_NONBLOCK );
-    _size = Vector2u((w.ws_col + 1), ((w.ws_row + 1) * 2));
-    _pixelsTab = std::vector<Pixel>( x(_size) * y(_size), Pixel( 0, 0, 0,  255));
-    _oldPixelsTab = std::vector<Pixel>(x(_size) * y(_size), Pixel( 0, 0, 0,  255));
+    _size = Vector2u((w.ws_col + 1) * 2, ((w.ws_row + 1) * 3));
+    _pixelsTab = PixelMatrix(_size);
+    _oldPixelsTab = PixelMatrix(_size);
     SignalHandler::getInstance().registerWindow(this);
 }
 
@@ -89,10 +90,9 @@ void tdl::Window::draw()
     if (!_content.empty()) {
         write(_fd, _content.c_str(), _content.size());
         _content = "";
-        for (u_int32_t i = 0; i < y(_size); i += 2) {
+        for (u_int32_t i = 0; i < y(_size); i += 1) {
             for (u_int32_t j = 0; j < x(_size); j++) {
-                getOldPixel(Vector2u(j, i)) = getPixel(Vector2u(j, i));
-                getOldPixel(Vector2u(j, i + 1))= _pixelsTab[(i + 1) * x(_size) + j];
+                _oldPixelsTab.getPixel(Vector2u(j, i)) = _pixelsTab.getPixel(Vector2u(j, i));
             }
         }
     }

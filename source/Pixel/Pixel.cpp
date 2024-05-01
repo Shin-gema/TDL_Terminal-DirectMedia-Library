@@ -31,4 +31,8 @@ namespace tdl {
         uint8_t a = std::clamp(static_cast<uint8_t>(GET_A(color) - GET_A(other.color)), std::uint8_t(0), std::uint8_t(255));
         return Pixel(r, g, b, a);
     }
+
+    bool Pixel::operator<(const Pixel& other) const {
+        return color < other.color;
+    }
 }

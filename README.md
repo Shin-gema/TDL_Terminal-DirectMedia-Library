@@ -28,8 +28,6 @@ Development is focused in adding new feature and improve the C++ Library. You ca
  If you want to contribute to this project, you can simply follow this step :
 
 - Fork this repository
-## Contributing
-
- If you want to contribute to this project, you can simply follow this step :
-
-- Fork this repository
+- Implement your functionnality in your repo
+- Create an pull request
+- And your done !

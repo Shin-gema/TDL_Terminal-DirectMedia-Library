@@ -72,7 +72,7 @@ namespace tdl {
      */
     Texture::Texture(std::string path, Vector2f scale, bool repeat) : TextureLoader(path), _scale(scale), _repeat(repeat)
     {
-        _rect = RectU(0, 0, x(_size), y(_size));
+        _rect = RectU(0, 0, x(_size) * x(_scale), y(_size) * y(_scale));
         loadPixels();
     }
 

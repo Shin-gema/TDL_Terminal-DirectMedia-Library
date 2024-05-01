@@ -46,10 +46,9 @@ void tdl::Window::moveCursor(Vector2u pos)
  * @brief ansii print pixel code
  * 
  */
-void tdl::Window::printPixel()
+void tdl::Window::printPixel(const char *shape)
 {
-    //_content += std::string(reinterpret_cast<const char*>("A"));
-    _content += std::string(reinterpret_cast<const char*>(u8"\u2584"));
+    _content += std::string(reinterpret_cast<const char*>(shape));
 }
 
 /**

@@ -105,8 +105,8 @@ tdl::Pixel tdl::Sprite::lerp(tdl::Pixel a, tdl::Pixel b, double t) {
  */
 void tdl::Sprite::drawOn(Window *window)
 {
-    u_int32_t i = x(_pos);
-    u_int32_t j = y(_pos);
+    u_int32_t i = 0;
+    u_int32_t j = 0;
     u_int32_t width = tdl::width(_rect);
     u_int32_t height = tdl::height(_rect);
 
@@ -126,11 +126,14 @@ void tdl::Sprite::drawOn(Window *window)
             double xRot = (i - centerX) * cos(theta) - (j - centerY) * sin(theta) + centerX;
             double yRot = (i - centerX) * sin(theta) + (j - centerY) * cos(theta) + centerY;
 
-            tdl::Pixel color = window->getPixel(Vector2u(i, j)) + _texture->getPixel(Vector2u(x, y));
+            if (i + tdl::x(_pos) < 0 || j + tdl::y(_pos) < 0 || i + tdl::x(_pos) >= window->getWidth() || j + tdl::y(_pos) >= window->getHeight()) {
+                i++;
+                continue;
+            }
+            tdl::Pixel color = window->getPixelsTab().getPixel(Vector2u(i + tdl::x(_pos), j + tdl::y(_pos))) + _texture->getPixel(Vector2u(x, y));
             if (!isBlackPixel(color) && _tint.has_value())
                 color = color + _tint.value();
-            window->setPixel(Vector2u(floor(xRot), floor(yRot)), color);
-            window->setPixel(Vector2u(ceil(xRot), floor(yRot)), color);
+            window->getPixelsTab().setPixel(Vector2u(i + tdl::x(_pos), j + tdl::y(_pos)), color);
 
             if ((x >= tdl::width(textureRect) + tdl::x(textureRect) - 1) && !_texture->getRepeat())
                 break;
@@ -142,7 +145,7 @@ void tdl::Sprite::drawOn(Window *window)
             break;
         if (( y >= tdl::height(textureRect)+ tdl::y(textureRect) - 1 ) && _texture->getRepeat())
             y = tdl::y(textureRect);
-        i = x(_pos);
+        i = 0;
         j++;
     }
 }

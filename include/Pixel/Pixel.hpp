@@ -69,6 +69,15 @@ namespace tdl {
          * @return Pixel the new pixel with the blend color
          */
         Pixel operator-(const Pixel &other) const;
+
+        /**
+         * @brief operator* overload for pixel
+         * this operator is used to blend the color of the pixel with another pixel
+         * the other pixel is the pixel to multiply blend with the current pixel
+         * @param other 
+         * @return Pixel the new pixel with the blend color
+         */
+        bool operator<(const Pixel &other) const;
     };
 
 }
