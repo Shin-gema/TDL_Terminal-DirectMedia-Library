@@ -1,13 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(libncurse)
+project(TDL)
 
-add_executable(libncurse testing/main.cpp shape/shape.cpp window/window.cpp texture/texture.cpp input_management/input.cpp logger/logger.cpp
-        texture/Vector.hpp window/SignalHandler.cpp)
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/exemple/*.cpp")
+
+add_executable(TDL ${SOURCES})
+
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(PNG REQUIRED)
 
-target_link_libraries(libncurse ${PNG_LIBRARY})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_link_libraries(TDL ${PNG_LIBRARY})
