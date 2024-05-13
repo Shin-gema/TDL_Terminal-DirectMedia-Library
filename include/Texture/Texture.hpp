@@ -20,6 +20,11 @@ namespace tdl {
             static Texture *createTexture(std::string path, bool repeat);
             static Texture *createTexture(std::string path, Vector2f scale, bool repeat);
 
+            static Texture *createTextureFromVector(Pixel *pixelData, Vector2u size);
+            static Texture *createTextureFromVector(Pixel * pixelData, Vector2u size, Vector2f scale);
+            static Texture *createTextureFromVector(Pixel * pixelData, Vector2u size, bool repeat);
+            static Texture *createTextureFromVector(Pixel * pixelData, Vector2u size, Vector2f scale, bool repeat);
+
             void resizeImage();
             void loadPixels();
 
@@ -34,6 +39,7 @@ namespace tdl {
 
         private : 
             Texture(std::string path, Vector2f scale, bool repeat);
+            Texture(Pixel *pixelData, Vector2u size, Vector2f scale, bool repeat);
 
             std::vector<std::vector<Pixel>> _pixelData;
             Vector2f _scale;

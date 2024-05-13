@@ -33,6 +33,7 @@ namespace tdl {
         private : 
             Sprite(Texture *texture, Vector2u pos);
             Sprite(Texture *texture, Vector2u pos, RectU rect);
+
             bool isBlackPixel(Pixel pixel);
 
             Texture *_texture;

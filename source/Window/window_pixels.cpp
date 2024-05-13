@@ -79,11 +79,7 @@ std::map<std::vector<std::pair<int, int>>, const char *> PixelCharMap = {
  */
 void tdl::Window::clearPixel()
 {
-    for (u_int32_t i = 0; i < y(_size); i ++) {
-        for (u_int32_t j = 0; j < x(_size); j++) {
-            _pixelsTab.setPixel(Vector2u(j, i), Pixel(0, 0,0, 255));
-        }
-    }
+    _pixelsTab.clear();
 }
 
 /**
@@ -113,11 +109,9 @@ void tdl::Window::updateTermSize()
  * @param pos the position of the char
  * @return CharColor the color of the char
  */
-tdl::CharColor tdl::Window::computeCharColor(Vector2u pos)
+tdl::CharColor tdl::Window::computeCharColor(Vector2u pos, std::vector<Pixel> pixels)
 {
     CharColor charColor;
-    std::vector<Pixel> pixels = _pixelsTab.getPixelChar(pos);
-    std::vector<Pixel> oldPixels = _oldPixelsTab.getPixelChar(pos);
 
     std::map<Pixel, int> colorCounts;
     std::map<Pixel, std::vector<std::pair<int, int>>> pixelGroups;
@@ -155,24 +149,54 @@ tdl::CharColor tdl::Window::computeCharColor(Vector2u pos)
  * @param all an boolean to force the update of all the pixel
  * @note if all is true the optimisation will be skip and all the screen is generated it will be useful at the start of an window or if you want to clear it to black
  */
-void tdl::Window::update(bool all)
-{
+void tdl::Window::update(bool all) {
     CharColor charColor;
     Vector2u pos = Vector2u(0, 0);
-    for (u_int32_t i = 0; i < y(_size); i += 3) {
-        for (u_int32_t j = 0; j < x(_size); j += 2) {
-            std::vector<Pixel> pixels = _pixelsTab.getPixelChar(Vector2u(j, i));
-            std::vector<Pixel> oldPixels = _oldPixelsTab.getPixelChar(Vector2u(j, i));
-            if (all || pixels != oldPixels) {
-                charColor = computeCharColor(Vector2u(j, i));
-                moveCursor(pos);
-                setRGBFrontGround(charColor.ForeGround);
-                setRGBBackGround(charColor.BackGround);
-                printPixel(charColor.shape);
+    Vector2u oldPos = Vector2u(0, 0);
+    std::vector<Pixel> pixels;
+    Pixel oldForeColor = Pixel(0, 0, 0, 0);
+    Pixel oldBackColor = Pixel(0, 0, 0, 0);
+    if (!all) {
+        for (Vector2u p = _changedPixels.front(); !_changedPixels.empty(); p = _changedPixels.front()) {
+            if (x(p) >= getWidth() || y(p) >= getHeight()) {
+                _changedPixels.pop();
+                continue;
             }
-            pos += Vector2u(1, 0);
+            pixels = _pixelsTab.getPixelChar(p);
+            charColor = computeCharColor(p, pixels);
+            moveCursor(p);
+            if (charColor.ForeGround != oldForeColor) {
+                setRGBFrontGround(charColor.ForeGround);
+                oldForeColor = charColor.ForeGround;
+            }
+            if (charColor.BackGround != oldBackColor) {
+                setRGBBackGround(charColor.BackGround);
+                oldBackColor = charColor.BackGround;
+            }
+            printPixel(charColor.shape);
+            _changedPixels.pop();
         }
-        pos = Vector2u(0, y(pos) + 2);
+    } else {
+        for (u_int32_t i = 0; i < y(_size); i += 3) {
+            for (u_int32_t j = 0; j < x(_size); j += 2) {
+                pixels = _pixelsTab.getPixelChar(Vector2u(j, i));
+                charColor = computeCharColor(Vector2u(j, i), pixels);
+                if (pos != oldPos + Vector2u(2, 0)) {
+                    moveCursor(pos);
+                }
+                if (charColor.ForeGround != oldForeColor) {
+                    setRGBFrontGround(charColor.ForeGround);
+                    oldForeColor = charColor.ForeGround;
+                }
+                if (charColor.BackGround != oldBackColor) {
+                    setRGBBackGround(charColor.BackGround);
+                    oldBackColor = charColor.BackGround;
+                }
+                printPixel(charColor.shape);
+                pos += Vector2u(1, 0);
+                oldPos = pos;
+            }
+            pos = Vector2u(0, y(pos) + 2);
+        }
     }
-
 }

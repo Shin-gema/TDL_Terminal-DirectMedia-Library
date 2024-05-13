@@ -77,6 +77,80 @@ namespace tdl {
     }
 
     /**
+     * @brief function to create a texture from a vector of pixel
+     *
+     * @param pixelData the vector of pixel to create the texture
+     * @return Texture* the texture created
+     * @overload
+     */
+    Texture *Texture::createTextureFromVector(Pixel *pixelData, Vector2u size)
+    {
+        return createTextureFromVector(pixelData, size, Vector2f(1.0, 1.0), false);
+    }
+
+    /**
+     * @brief function to create a texture from a vector of pixel
+     *
+     * @param pixelData the vector of pixel to create the texture
+     * @param scale the scale of the texture
+     * @return Texture* the texture created
+     * @overload
+     */
+    Texture *Texture::createTextureFromVector(Pixel *pixelData, Vector2u size, Vector2f scale)
+    {
+        return createTextureFromVector(pixelData, size, scale, false);
+    }
+
+    /**
+     * @brief function to create a texture from a vector of pixel
+     *
+     * @param pixelData the vector of pixel to create the texture
+     * @param repeat the repeat of the texture
+     * @return Texture* the texture created
+     */
+    Texture *Texture::createTextureFromVector(Pixel *pixelData, Vector2u size, bool repeat)
+    {
+        return createTextureFromVector(pixelData, size, Vector2f(1.0, 1.0), repeat);
+    }
+
+    /**
+     * @brief function to create a texture from a vector of pixel
+     *
+     * @param pixelData the vector of pixel to create the texture
+     * @param scale the scale of the texture
+     * @param repeat the repeat of the texture
+     * @return Texture* the texture created
+     */
+    Texture *Texture::createTextureFromVector(Pixel *pixelData, Vector2u size, Vector2f scale, bool repeat)
+    {
+        try {
+            return new Texture(pixelData, size, scale, repeat);
+        } catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
+        }
+        return nullptr;
+    }
+
+    /**
+     * @brief function to create a texture from a vector of pixel
+     *
+     * @param pixelData the vector of pixel to create the texture
+     * @param scale the scale of the texture
+     * @param repeat the repeat of the texture
+     */
+    Texture::Texture(Pixel *pixelData, Vector2u size, tdl::Vector2f scale, bool repeat) : TextureLoader(""), _scale(scale), _repeat(repeat)
+    {
+        _pixelData = std::vector<std::vector<Pixel>>(y(size), std::vector<Pixel>(x(size), Pixel(0, 0, 0, 255)));
+        for (u_int32_t y = 0; y < tdl::y(size); y++) {
+            for (u_int32_t x = 0; x < tdl::x(size); x++) {
+                _pixelData[y][x] = pixelData[y * tdl::x(size) + x];
+            }
+        }
+        _size = size;
+        _rect = RectU(0, 0, x(_size) * x(_scale), y(_size) * y(_scale));
+    }
+
+    /**
      * @brief Destroy the Texture:: Texture object
      * 
      */

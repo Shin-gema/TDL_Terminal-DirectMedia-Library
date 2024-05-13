@@ -10,11 +10,13 @@
 
 #include <string>
 #include <list>
+#include <iostream>
 #include <array>
 #include <vector>
 #include <termios.h>
 #include "Pixel/Pixel.hpp"
 #include "Vector.hpp"
+
 #include "Window/windowBase.hpp"
 #include "Matrix/PixelMatrix.hpp"
 
@@ -35,7 +37,7 @@ namespace tdl {
 
             // pixel management
             void clearPixel();
-            CharColor computeCharColor(Vector2u pos);
+            CharColor computeCharColor(Vector2u pos, std::vector<Pixel> pixels);
             void update(bool all = false);
             void draw();
 
@@ -49,6 +51,10 @@ namespace tdl {
             void setFrameRate(u_int8_t frameRate) { _frameRate = frameRate; }
 
             void updateTermSize();
+
+            void printFrameRate();
+
+            void registerUpdate(Vector2u pos);
         private:
             Window(std::string const title, std::string const ttyPath);
 
@@ -71,6 +77,11 @@ namespace tdl {
             struct termios _tty;
             PixelMatrix _pixelsTab;
             PixelMatrix _oldPixelsTab;
+
+            int framecounter = 0;
+            std::chrono::time_point<std::chrono::system_clock> start;
+
+            std::queue<Vector2u> _changedPixels;
 
     };
 }

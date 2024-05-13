@@ -32,6 +32,7 @@ tdl::Window::Window(std::string const title, std::string const ttyPath) :WindowB
     _pixelsTab = PixelMatrix(_size);
     _oldPixelsTab = PixelMatrix(_size);
     SignalHandler::getInstance().registerWindow(this);
+    start = std::chrono::system_clock::now();
 }
 
 /**
@@ -90,11 +91,22 @@ void tdl::Window::draw()
     if (!_content.empty()) {
         write(_fd, _content.c_str(), _content.size());
         _content = "";
-        for (u_int32_t i = 0; i < y(_size); i += 1) {
-            for (u_int32_t j = 0; j < x(_size); j++) {
-                _oldPixelsTab.getPixel(Vector2u(j, i)) = _pixelsTab.getPixel(Vector2u(j, i));
-            }
-        }
+        std::copy(_pixelsTab.getPixelsTab().begin(), _pixelsTab.getPixelsTab().end(), _oldPixelsTab.getPixelsTab().begin());
+        moveCursor(Vector2u(0, 0));
     }
-    usleep(1000000 / _frameRate);
+}
+
+void tdl::Window::printFrameRate() {
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end-start;
+    if (elapsed_seconds.count() >= 1) {
+        std::cerr << "Frame rate : " << framecounter << std::endl;
+        framecounter = 0;
+        start = std::chrono::system_clock::now();
+    }
+    framecounter++;
+}
+
+void tdl::Window::registerUpdate(tdl::Vector2u pos) {
+    _changedPixels.push(pos);
 }

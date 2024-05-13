@@ -121,8 +121,8 @@ void tdl::Sprite::drawOn(Window *window)
     double centerY = (height / 2);
     double theta = _rotation * M_PI / 180;
 
-    for (u_int32_t y = tdl::y(textureRect), y_tot = tdl::y(textureRect); y_tot < height + tdl::y(textureRect); y++, y_tot++) {
-        for (u_int32_t x = tdl::x(textureRect), x_tot = tdl::x(textureRect); x_tot < width + tdl::x(textureRect); x++, x_tot++) {
+    for (u_int32_t y = tdl::y(textureRect), y_tot = tdl::y(textureRect); y_tot < height + tdl::y(textureRect); y += 2, y_tot += 2) {
+        for (u_int32_t x = tdl::x(textureRect), x_tot = tdl::x(textureRect); x_tot < width + tdl::x(textureRect); x += 3, x_tot += 3) {
             double xRot = (i - centerX) * cos(theta) - (j - centerY) * sin(theta) + centerX;
             double yRot = (i - centerX) * sin(theta) + (j - centerY) * cos(theta) + centerY;
 
@@ -130,10 +130,17 @@ void tdl::Sprite::drawOn(Window *window)
                 i++;
                 continue;
             }
-            tdl::Pixel color = window->getPixelsTab().getPixel(Vector2u(i + tdl::x(_pos), j + tdl::y(_pos))) + _texture->getPixel(Vector2u(x, y));
-            if (!isBlackPixel(color) && _tint.has_value())
-                color = color + _tint.value();
-            window->getPixelsTab().setPixel(Vector2u(i + tdl::x(_pos), j + tdl::y(_pos)), color);
+            window->registerUpdate(Vector2u(i + tdl::x(_pos), j + tdl::y(_pos)));
+            for (u_int32_t t = 0; t < 3; t++) {
+                for (u_int32_t h = 0; h < 2; h++) {
+                    if (x + h >= tdl::width(textureRect) + tdl::x(textureRect) || y + t >= tdl::height(textureRect) + tdl::y(textureRect) || h + i + tdl::x(_pos) >= window->getWidth() || t + j + tdl::y(_pos) >= window->getHeight())
+                        continue;
+                    tdl::Pixel color = window->getPixelsTab().getPixel(Vector2u(h + i + tdl::x(_pos), t + j + tdl::y(_pos))) + _texture->getPixel(Vector2u(x + h, y + t));
+                    if (!isBlackPixel(color) && _tint.has_value())
+                        color = color + _tint.value();
+                    window->getPixelsTab().setPixel(Vector2u(i + tdl::x(_pos) + t, j + tdl::y(_pos) + h), color);
+                }
+            }
 
             if ((x >= tdl::width(textureRect) + tdl::x(textureRect) - 1) && !_texture->getRepeat())
                 break;

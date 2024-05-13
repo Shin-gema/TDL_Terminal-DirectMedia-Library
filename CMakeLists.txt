@@ -1,17 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(TDL)
-
-file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/exemple/*.cpp")
-
-add_executable(TDL ${SOURCES})
-
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+project(
+    TDL
+    VERSION 0.1
+    DESCRIPTION "A Terminal Drawing Library"
+    LANGUAGES CXX
+)
 
 find_package(PNG REQUIRED)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-target_link_libraries(TDL ${PNG_LIBRARY})
+set(TDL_EXAMPLES_DIR            ${CMAKE_CURRENT_SOURCE_DIR}/example)
+set(TDL_EXAMPLES_OUTPUT_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/demo)
+
+include(${TDL_EXAMPLES_DIR}/CMakeLists.txt)
