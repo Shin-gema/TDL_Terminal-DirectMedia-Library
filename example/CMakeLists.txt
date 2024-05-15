@@ -15,7 +15,7 @@ foreach(dir ${SRC_DIRS})
     )
     if(SRC_FILES)
         add_executable(${dir_name} ${TDL_SOURCE} ${SRC_FILES})
-        target_link_libraries(${dir_name} ${PNG_LIBRARY})
+        target_link_libraries(${dir_name} ${PNG_LIBRARIES})
         message(STATUS "Adding example: ${dir_name}")
         set_target_properties(
                 ${dir_name}

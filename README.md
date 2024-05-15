@@ -18,8 +18,7 @@ sudo make
 sudo make install
 ```
 The file should be correctly installed, and you can compile your code with the library using:
-``` make your_project -ltdl -lpng```
-the ```-lpng``` is an intern library used by TDL this will be removing from the compilation line soon.
+``` make your_project -ltdl```
 
 ## State of Developpement
 

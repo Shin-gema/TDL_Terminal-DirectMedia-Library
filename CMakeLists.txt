@@ -7,15 +7,15 @@ project(
         LANGUAGES CXX
 )
 
-# Find the libpng library
 find_package(PNG REQUIRED)
 
-message(STATUS "PNG_FOUND: ${PNG_FOUND}")
-message(STATUS "PNG_LIBRARIES: ${PNG_LIBRARIES}")
-message(STATUS "PNG_INCLUDE_DIRS: ${PNG_INCLUDE_DIRS}")
+message(STATUS "libpng library found")
+message(STATUS "libpng include directories: ${PNG_INCLUDE_DIRS}")
+message(STATUS "libpng libraries: ${PNG_LIBRARIES}")
+
 
 file(GLOB_RECURSE TDL_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${PNG_INCLUDE_DIRS})
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -27,7 +27,7 @@ set(TDL_LIB_DIR                 ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 include(${TDL_EXAMPLES_DIR}/CMakeLists.txt)
 add_library(
         tdl
-        STATIC
+        SHARED
         ${TDL_SOURCE}
 )
 set_target_properties(
@@ -38,16 +38,11 @@ set_target_properties(
 target_include_directories(tdl PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+        ${PNG_INCLUDE_DIRS}
 )
-include_directories(${PNG_INCLUDE_DIRS})
-foreach (inc ${PNG_INCLUDE_DIRS})
-    target_include_directories(tdl PUBLIC ${inc})
-    message(STATUS "Including ${inc}")
-endforeach ()
-foreach (lib ${PNG_LIBRARIES})
-    target_link_libraries(tdl PUBLIC ${lib})
-    message(STATUS "Linking ${lib}")
-endforeach ()
+
+target_link_libraries(tdl LINK_PUBLIC ${PNG_LIBRARIES})
+
 
 install(TARGETS tdl
         EXPORT tdlTargets
@@ -59,8 +54,12 @@ install(EXPORT tdlTargets
         NAMESPACE tdl::
         DESTINATION /usr/local/lib/cmake/tdl
 )
-
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
         DESTINATION /usr/local/include
         FILES_MATCHING PATTERN "*.hpp"
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
+        DESTINATION /usr/local/lib
+        FILES_MATCHING PATTERN "*.so"
 )
