@@ -3,9 +3,6 @@ file(
         LIST_DIRECTORIES true
 )
 
-file(GLOB_RECURSE TDL_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 foreach(dir ${SRC_DIRS})
     if(NOT IS_DIRECTORY ${dir})
         continue()

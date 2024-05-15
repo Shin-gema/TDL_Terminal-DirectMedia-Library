@@ -8,13 +8,12 @@
 #include <iostream>
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include "Window/window.hpp"
-#include "Event/Event.hpp"
-#include "Input/inputKeyboard.hpp"
-#include "Sprite/Sprite.hpp"
-#include "Pixel/Pixel.hpp"
-#include "Vector.hpp"
-#include <png.h>
+#include <tdl/Window/window.hpp>
+#include "tdl/Event/Event.hpp"
+#include "tdl/Input/inputKeyboard.hpp"
+#include "tdl/Sprite/Sprite.hpp"
+#include "tdl/Pixel/Pixel.hpp"
+#include "tdl/Vector.hpp"
 #include <tuple>
 #include <queue>
 
@@ -34,7 +33,7 @@ int main()
         win->draw();
         for(tdl::Event event; win->pollEvent(event);) {
             if (event.type == tdl::Event::EventType::KeyPressed) {
-                if (event.key.code == tdl::TDLKeyCodes::KEY_ESC)
+                if (event.key.code == tdl::KeyCodes::KEY_ESC)
                     return 0;
             }
         }

@@ -5,3 +5,6 @@ POC
 vgcore*
 libncurse
 log
+.idea
+Makefile
+build
