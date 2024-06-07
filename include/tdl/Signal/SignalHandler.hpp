@@ -8,6 +8,7 @@
 
 namespace tdl {
 /**
+ * @class SignalHandler
  * @brief this class is in charge of handling all the signals for the windows
  * the pattern used is singleton
  */
@@ -61,7 +62,7 @@ namespace tdl {
  */
         void handleSignalInstance();
 
-        std::vector<Window*> _windows;
+        std::vector<Window*> _windows; /**< the list of windows registered to the signal handler */
     };
 }
 

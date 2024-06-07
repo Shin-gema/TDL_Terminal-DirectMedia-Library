@@ -5,6 +5,14 @@
 #include <cstdint>
 #include <type_traits>
 
+/**
+ * @brief check if there is an error in the openAL context
+ * 
+ * @param filename the filename where the error is
+ * @param line the line where the error is
+ * @return true if there is not an error
+ * @return false if there is an error
+ */
 bool check_al_errors(const std::string& filename, const std::uint_fast32_t line)
 {
     ALenum error = alGetError();
@@ -37,6 +45,18 @@ bool check_al_errors(const std::string& filename, const std::uint_fast32_t line)
     return true;
 }
 
+/**
+ * @brief call an openAL function and check if there is an error
+ * 
+ * @tparam alFunction OpenAl Function to call
+ * @tparam Params Parameters of the function
+ * @param filename filename where the function is called
+ * @param line line where the function is called
+ * @param function function to call
+ * @param params parameters of the function
+ * @return std::enable_if_t<!std::is_same_v<void, decltype(function(params...))>, decltype(function(params...))> the return value of the function
+ * @note this template will alwais be calles if the function return a value
+ */
 template<typename alFunction, typename... Params>
 auto alCallImpl(const char* filename,
                 const std::uint_fast32_t line,
@@ -49,6 +69,17 @@ auto alCallImpl(const char* filename,
     return ret;
 }
 
+/**
+ * @brief 
+ * 
+ * @tparam alFunction the OpenAL function to call
+ * @tparam Params the parameters of the function
+ * @param filename the filename where the function is called
+ * @param line the line where the function is called
+ * @param function the function to call
+ * @param params the parameters of the function
+ * @return std::enable_if_t<std::is_same_v<void, decltype(function(params...))>, bool> true if there is no error
+ */
 template<typename alFunction, typename... Params>
 auto alCallImpl(const char* filename,
                 const std::uint_fast32_t line,
@@ -64,6 +95,15 @@ auto alCallImpl(const char* filename,
 
 #define alcCall(function, device, ...) alcCallImpl(__FILE__, __LINE__, function, device, ##__VA_ARGS__)
 
+/**
+ * @brief check if there is an error in the openAL context
+ * 
+ * @param filename Filename where the error is
+ * @param line Line where the error is
+ * @param device the openAL device
+ * @return true if there is no error
+ * @return false if there is an error
+ */
 bool check_alc_errors(const std::string& filename, const std::uint_fast32_t line, ALCdevice* device)
 {
     ALCenum error = alcGetError(device);
@@ -96,6 +136,18 @@ bool check_alc_errors(const std::string& filename, const std::uint_fast32_t line
     return true;
 }
 
+/**
+ * @brief call an openAL function and check if there is an error
+ * 
+ * @tparam alcFunction OpenAlC Function to call
+ * @tparam Params Parameters of the function
+ * @param filename filename where the function is called
+ * @param line line where the function is called
+ * @param function function to call
+ * @param device the openALC device
+ * @param params parameters of the function
+ * @return std::enable_if_t<std::is_same_v<void,decltype(function(params...))>,bool> true if there is no error
+ */
 template<typename alcFunction, typename... Params>
 auto alcCallImpl(const char* filename, 
                  int line, 
@@ -108,6 +160,19 @@ auto alcCallImpl(const char* filename,
     return check_alc_errors(filename,line,device);
 }
 
+/**
+ * @brief call an openAL function and check if there is an error
+ * 
+ * @tparam alcFunction OpenAlC Function to call
+ * @tparam ReturnType the return type of the function
+ * @tparam Params Parameters of the function
+ * @param filename filename where the function is called
+ * @param line line where the function is called
+ * @param function function to call
+ * @param device the openALC device
+ * @param params parameters of the function
+ * @return std::enable_if_t<!std::is_same_v<void,decltype(function(params...))>,bool> true if there is no error
+ */
 template<typename alcFunction, typename ReturnType, typename... Params>
 auto alcCallImpl(const char* filename,
                  int line,

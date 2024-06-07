@@ -9,26 +9,11 @@
 
 namespace tdl {
 
-    /**
-     * @brief function to create a texture
-     * 
-     * @param path the path to the png file to load
-     * @return Texture* the texture created
-     * @overload
-     */
     Texture *Texture::createTexture(std::string path)
     {
         return createTexture(path, false);
     }
 
-    /**
-     * @brief function to create a texture
-     * 
-     * @param path the path to the png file to load
-     * @param repeat the repeat of the texture
-     * @return Texture* the texture created
-     * @overload
-     */
     Texture *Texture::createTexture(std::string &path, bool repeat)
     {
         try {
@@ -39,65 +24,28 @@ namespace tdl {
         return nullptr;
     }
 
-    /**
-     * @brief Construct a new Texture:: Texture object
-     * 
-     * @param path the path to the png file to load
-     * @param scale the scale of the texture
-     * @param repeat the repeat of the texture
-     */
     Texture::Texture(std::string &path, bool repeat) : TextureLoader(path), Transformable()
     {
         loadPixels();
     }
 
-    /**
-     * @brief function to create a texture from a vector of pixel
-     *
-     * @param pixelData the vector of pixel to create the texture
-     * @return Texture* the texture created
-     * @overload
-     */
     Texture *Texture::createTextureFromVector(Pixel *pixelData, Vector2u &size)
     {
         Vector2f scale = Vector2f(1.0, 1.0);
         return createTextureFromVector(pixelData, size, scale, false);
     }
 
-    /**
-     * @brief function to create a texture from a vector of pixel
-     *
-     * @param pixelData the vector of pixel to create the texture
-     * @param scale the scale of the texture
-     * @return Texture* the texture created
-     * @overload
-     */
     Texture *Texture::createTextureFromVector(Pixel *pixelData, Vector2u &size, Vector2f &scale)
     {
         return createTextureFromVector(pixelData, size, scale, false);
     }
 
-    /**
-     * @brief function to create a texture from a vector of pixel
-     *
-     * @param pixelData the vector of pixel to create the texture
-     * @param repeat the repeat of the texture
-     * @return Texture* the texture created
-     */
     Texture *Texture::createTextureFromVector(Pixel *pixelData, Vector2u &size, bool repeat)
     {
         Vector2f scale = Vector2f(1.0, 1.0);
         return createTextureFromVector(pixelData, size, scale, repeat);
     }
 
-    /**
-     * @brief function to create a texture from a vector of pixel
-     *
-     * @param pixelData the vector of pixel to create the texture
-     * @param scale the scale of the texture
-     * @param repeat the repeat of the texture
-     * @return Texture* the texture created
-     */
     Texture *Texture::createTextureFromVector(Pixel *pixelData, Vector2u &size, Vector2f &scale, bool repeat)
     {
         try {
@@ -108,13 +56,6 @@ namespace tdl {
         return nullptr;
     }
 
-    /**
-     * @brief function to create a texture from a vector of pixel
-     *
-     * @param pixelData the vector of pixel to create the texture
-     * @param scale the scale of the texture
-     * @param repeat the repeat of the texture
-     */
     Texture::Texture(Pixel *pixelData, Vector2u &size, tdl::Vector2f &scale, bool repeat) : TextureLoader("")
     {
         _originalImageData = PixelMatrix(size);
@@ -126,16 +67,8 @@ namespace tdl {
         _size = size;
     }
 
-    /**
-     * @brief Destroy the Texture:: Texture object
-     * 
-     */
     Texture::~Texture() = default;
 
-    /**
-     * @brief load the image form in pixelData. The load is based from the TextureLoader data
-     * @note if you call this function out of the constructor, you can reload the image
-     */
     void Texture::loadPixels()
     {
         Pixel color;
@@ -159,12 +92,6 @@ namespace tdl {
         }
     }
 
-    /**
-     * @brief get the pixel at the position pos
-     * 
-     * @param pos the position of the pixel
-     * @return Pixel the pixel at the position pos
-     */
     Pixel Texture::getOriginalPixel(Vector2u &pos)
     {
         return _originalImageData.getPixel(pos);

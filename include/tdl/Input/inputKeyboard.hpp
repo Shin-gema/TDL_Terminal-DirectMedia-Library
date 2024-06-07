@@ -21,6 +21,7 @@ namespace tdl {
     class WindowBase;
 
 /**
+ * @class InputKeyboard
  * @brief Class to handle the keyboard input
  *
  */

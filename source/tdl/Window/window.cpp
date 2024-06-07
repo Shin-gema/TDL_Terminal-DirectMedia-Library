@@ -10,13 +10,6 @@
 #include "tdl/Signal/SignalHandler.hpp"
 #include "tdl/Matrix/PixelMatrix.hpp"
 
-/**
- * @brief Construct a new tdl::Window::Window object
- * 
- * @param title The title of the window
- * @param tty_path The path to the tty to lauch the window, the available tty are /dev/tty or /dev/pts/0.../dev/pts/x
- * @note the SignalHandler.getInstance is used to register the window on the signal manager it permited to automatically resize the window when the terminal is resized
- */
 tdl::Window::Window(std::string  title, std::string const& ttyPath) :WindowBase(ttyPath), _title(std::move(title)), _frameRate(60), Drawable() {
     struct winsize w{};
     int param;
@@ -69,11 +62,6 @@ tdl::Window* tdl::Window::CreateWindow(std::string const& title, std::string con
     }
 }
 
-
-/**
- * @brief disable the echo of the terminal
- * we disable the echo of the terminal to avoid the input to be displayed on the terminal
- */
 void tdl::Window::disableEcho()
 {
     tcgetattr(_fd, &_tty);
@@ -81,11 +69,7 @@ void tdl::Window::disableEcho()
     tcsetattr(STDIN_FILENO,TCSANOW,&_tty);
 }
 
-/**
- * @brief write the content generate by updatePixel to the terminal
- * and save the current pixel to the old pixel table
- * @note the copy of the pixel in the oldpixel is make two at a time because 1 charactere = 2 pixel
- */
+
 void tdl::Window::draw()
 {
     if (!_content.empty()) {

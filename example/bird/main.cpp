@@ -34,7 +34,7 @@ int main()
     tex->rotate(rotation);
     //tex->setScale(2,2);
     //sprite->setScale(1, 1);
-    //tex->setRect(tdl::RectU(100, 100, 100, 100));
+    tex->setRect(tdl::RectU(100, 100, 100, 100));
     while (true)
     {
         win->clearPixel();

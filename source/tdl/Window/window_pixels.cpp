@@ -19,11 +19,6 @@ void tdl::Window::clearPixel()
     }
 }
 
-/**
- * @brief update the terminal size
- * @warning this function is called at the creation of the window and when the terminal size change
- * by the signale handler 
- */
 void tdl::Window::updateTermSize()
 {
     struct winsize w{};
@@ -40,12 +35,6 @@ void tdl::Window::updateTermSize()
     update(true);
 }
 
-/**
- * @brief update the window with the new pixel to draw on the screen by generating an optimized ansii escape code sequence
- * 
- * @param all an boolean to force the update of all the pixel
- * @note if all is true the optimisation will be skip and all the screen is generated it will be useful at the start of an window or if you want to clear it to black
- */
 void tdl::Window::update(bool all) {
     CharColor charColor;
     Vector2u pos = Vector2u(0, 0);

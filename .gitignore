@@ -8,3 +8,6 @@ log
 .idea
 Makefile
 build
+html/
+latex/
+demo/

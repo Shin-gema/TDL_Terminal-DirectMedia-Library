@@ -10,6 +10,7 @@
 namespace tdl
 {
     /**
+     * @enum KeyCodes
      * @brief Enum of key codes and their corresponding values
      */
     enum KeyCodes {

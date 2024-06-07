@@ -6,22 +6,12 @@
 #include <iostream>
 #include "tdl/Texture/TextureLoader.hpp"
 
-/**
- * @brief Construct a new tdl::Texture Loader::Texture Loader object
- * 
- * @param path the path to the png file to load 
- * @note on this version, the texture loader only loads png files
- */
 tdl::TextureLoader::TextureLoader(std::string path) : _path(path), _info_ptr(nullptr), _row_pointers(nullptr), _png_ptr(nullptr), _size(0, 0), _channels(0), _bit_depth(0)
 {
     if(path != "")
         loadTexture();
 }
 
-/**
- * @brief Destroy the tdl::Texture Loader::Texture Loader object
- * 
- */
 tdl::TextureLoader::~TextureLoader()
 {
     if (_info_ptr != nullptr)
@@ -30,13 +20,6 @@ tdl::TextureLoader::~TextureLoader()
         delete[] _row_pointers;
 }
 
-/**
- * @brief check if the file is a png file
- * 
- * @param fd the file to check
- * @return true if the file is a png file
- * @return false if the file is not a png file
- */
 bool tdl::TextureLoader::isPng(std::string path)
 {
     FILE* file = fopen(path.c_str(), "rb");
@@ -51,12 +34,6 @@ bool tdl::TextureLoader::isPng(std::string path)
     return !png_sig_cmp(header, 0, 8);
 }
 
-/**
- * @brief load the texture from the given path
- * 
- * @param path the path to the png file to load
- * @note this function is the init of the texture loader
- */
 void tdl::TextureLoader::loadTexture(std::string path)
 {
     _path = path;
@@ -77,10 +54,6 @@ void tdl::TextureLoader::loadTexture(std::string path)
     fclose(fp);
 }
 
-/**
- * @brief load the texture from the stock path
- * @overload
- */
 void tdl::TextureLoader::loadTexture()
 {
     loadTexture(_path);
