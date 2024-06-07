@@ -51,7 +51,7 @@ namespace tdl {
  * @param key the char to cast
  * @return tdl::TDLKeyCodes the casted value
  */
-        KeyCodes charToKeyCodes(char key);
+        static KeyCodes charToKeyCodes(char key);
 
     protected:
         KeyCodes _shared_data;

@@ -15,7 +15,8 @@ foreach(dir ${SRC_DIRS})
     )
     if(SRC_FILES)
         add_executable(${dir_name} ${TDL_SOURCE} ${SRC_FILES})
-        target_link_libraries(${dir_name} ${PNG_LIBRARIES})
+        target_link_libraries(${dir_name} ${PNG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SNDFILE_LIBRARIES} ${ALSA_LIBRARIES} ${LIBVORBIS_LIBRARIES} ${OPENAL_LIBRARY} profiler)
+        target_include_directories(${dir_name} PRIVATE ${SNDFILE_INCLUDE_DIRS} ${LIBVORBIS_INCLUDE_DIRS} ${OPENAL_INCLUDE_DIR})
         message(STATUS "Adding example: ${dir_name}")
         set_target_properties(
                 ${dir_name}

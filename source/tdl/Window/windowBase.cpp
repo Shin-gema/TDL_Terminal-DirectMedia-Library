@@ -1,19 +1,18 @@
 
 #include <iostream> 
 #include <queue>
+#include <utility>
 #include "tdl/Event/Event.hpp"
 #include "tdl/Window/windowBase.hpp"
 #include "tdl/Input/inputKeyboard.hpp"
 
 tdl::WindowBase::WindowBase( std::string fdPath)
-    : _fdPath(fdPath)
+    : _fdPath(std::move(fdPath))
 {
     _input = InputKeyboard();
 }
 
-tdl::WindowBase::~WindowBase()
-{
-}
+tdl::WindowBase::~WindowBase() = default;
 
 /**
  * @brief Polls the event

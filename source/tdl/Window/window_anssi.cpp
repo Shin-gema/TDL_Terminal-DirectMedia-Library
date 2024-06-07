@@ -9,7 +9,6 @@
 void tdl::Window::setRGBFrontGround(Pixel pixel)
 {
     _content += "\033[38;2;" + std::to_string(GET_R(pixel.color)) + ";" + std::to_string(GET_G(pixel.color)) + ";" + std::to_string(GET_B(pixel.color)) + "m";
-
 }
 
 /**
@@ -39,7 +38,7 @@ void tdl::Window::clearScreen()
  */
 void tdl::Window::moveCursor(Vector2u pos)
 {
-    _content += "\033[" + std::to_string(y(pos) / 2) + ";" + std::to_string(x(pos)) + "H";
+    _content += "\033[" + std::to_string(pos.y() / 2) + ";" + std::to_string(pos.x()) + "H";
 }
 
 /**
@@ -48,6 +47,8 @@ void tdl::Window::moveCursor(Vector2u pos)
  */
 void tdl::Window::printPixel(const char *shape)
 {
+    if (shape == nullptr)
+        return;
     _content += std::string(reinterpret_cast<const char*>(shape));
 }
 

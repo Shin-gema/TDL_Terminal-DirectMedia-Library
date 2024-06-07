@@ -1,46 +1,43 @@
 
 #include "tdl/Window/window.hpp"
-#include "tdl/Texture/Texture.hpp"
+#include "tdl/Drawable/Texture/Texture.hpp"
 #include "tdl/Vector.hpp"
 #include "tdl/Rect.hpp"
 #include "tdl/Pixel/Pixel.hpp"
+#include "tdl/Matrix/Transformation.hpp"
+#include "tdl/Drawable/Drawable.hpp"
 #include <optional>
 
 #ifndef SPRITE_HPP
     #define SPRITE_HPP
 
 namespace tdl {
-    class Sprite {
+    class Sprite : public Transformable, public Drawable {
         public :
 
-            static Sprite *createSprite(Texture *texture, Vector2u pos);
-            static Sprite *createSprite(Texture *texture, Vector2u pos, RectU rect);
-            ~Sprite();
+            static Sprite *createSprite(Texture *texture, Vector2u &pos);
+            static Sprite *createSprite(Texture *texture, Vector2u &pos, RectU &rect);
+            ~Sprite() override;
 
             void setTexture(Texture *texture) { _texture = texture;}
-            void setRect(RectU rect) { _rect = rect;}
             void setTint(Pixel tint) { _tint = tint;}
-            void setRotation(double rotation) { _rotation = rotation;}
 
             Texture *getTexture() { return _texture;}
-            RectU getRect() { return _rect;}
             Pixel getTint() { return _tint.value_or(Pixel(0, 0, 0, 0));}
-            double getRotation() { return _rotation;}
 
-            void drawOn(Window *window);
-            Pixel lerp(Pixel a, Pixel b, double t);
+            //void drawOn(Window *window);
+            void draw(Drawable *drawable) override;
+            static Pixel lerp(Pixel a, Pixel b, double t);
 
         private : 
-            Sprite(Texture *texture, Vector2u pos);
-            Sprite(Texture *texture, Vector2u pos, RectU rect);
+            Sprite(Texture *texture, Vector2u &pos);
+            Sprite(Texture *texture, Vector2u &pos, RectU &rect);
 
-            bool isBlackPixel(Pixel pixel);
+            static bool isBlackPixel(Pixel pixel);
 
             Texture *_texture;
             Vector2u _pos;
-            RectU _rect;
             std::optional<Pixel> _tint;
-            double _rotation = 0;
     };
 }
 

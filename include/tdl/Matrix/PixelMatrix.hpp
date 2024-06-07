@@ -3,11 +3,26 @@
 
     #include "tdl/Pixel/Pixel.hpp"
     #include "tdl/Vector.hpp"
+
+    #include "tdl/Rect.hpp"
     #include <vector>
     #include <iostream>
+    #include <optional>
+    #include <queue>
+    #include <map>
+
+#include <algorithm>
 
 
 namespace tdl {
+
+
+    struct CharColor {
+        const char *shape{};
+        Pixel ForeGround;
+        Pixel BackGround;
+    };
+
 /**
  * @brief PixelMatrix class
  * this class is a matrix of pixel
@@ -27,7 +42,7 @@ namespace tdl {
 *
 * @param size the size of the matrix
 */
-            PixelMatrix(Vector2u size);
+            explicit PixelMatrix(Vector2u size);
 
 /**
  * @brief Destroy the Pixel Matrix:: Pixel Matrix object
@@ -41,14 +56,40 @@ namespace tdl {
  * @param pos the position of the pixel
  * @param color the color of the pixel
  */
-            void setPixel(Vector2u pos, Pixel color);
+            void setPixel(const Vector2u &pos, Pixel &color);
 
 /**
  * @brief get the pixel at the position pos
  * @param pos the position of the pixel
  * @return Pixel the pixel at the position pos
  */
-            Pixel &getPixel(Vector2u pos) { return _pixelsTab[y(pos) * x(_size) + x(pos)]; }
+            constexpr Pixel &getPixel(Vector2u pos) {
+                if (pos.x() > _size.x() || pos.y() > _size.y()) {
+                    return _pixelsTab[0];
+                }
+                return _pixelsTab[pos.y() * _size.x() + pos.x()];
+            }
+
+            std::queue<Vector2u> &getToUpdate() { return _toUpdate; }
+
+/**
+ * @brief register the pixel at the position pos to be updated
+ */
+
+    void registerToUpdate(const Vector2u& pos) {
+        _toUpdate.push(pos);
+    }
+
+    void registerPixelCharToUpdate(Vector2u pos) {
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 2; j++) {
+                registerToUpdate(Vector2u(pos.x() + j, pos.y() + i));
+            }
+    }
+
+    static bool isPixelCharToUpdate(Pixel *right, Pixel *left) {
+        return (right[0] != left[0] || right[1] != left[1] || right[2] != left[2] || right[3] != left[3] || right[4] != left[4] || right[5] != left[5]);
+    }
 
 /**
 * @brief get an array of 3*2 pixel at the position pos
@@ -57,21 +98,27 @@ namespace tdl {
 * @param pos the position of the pixel
 * @return Vector<Pixel> an 3*2 vector of pixel at the position pos
 */
-            std::vector<Pixel> getPixelChar(Vector2u pos);
+            void getPixelChar(Vector2u pos, Pixel *pixel);
+
+            void setPixelChar(Vector2u pos, Pixel *pixel);
+
+            CharColor computeCharColor(Vector2u pos, Pixel *pixels);
 
 /**
  * @brief get the size of the matrix
  * @return Vector2u the size of the matrix
  */
-            Vector2u getSize() const { return _size;}
+            [[nodiscard]] Vector2u getSize() const { return _size;}
             std::vector<Pixel> &getPixelsTab() { return _pixelsTab; }
+
+            void append(std::vector<Pixel> &pixels);
 
 /**
 * @brief resize the matrix to the size size
 *
 * @param size the new size of the matrix
 */
-            void resize(Vector2u size);
+            void resize(Vector2u &size);
 
 /**
  * @brief clear the matrix with black pixel
@@ -79,8 +126,29 @@ namespace tdl {
  */
             void clear();
 
+            PixelMatrix operator-(std::optional<RectU> crop)
+            {
+                if (!crop.has_value())
+                    return *this;
+                PixelMatrix newMatrix = PixelMatrix(Vector2u (crop.value().width(), crop.value().height()));
+                for (u_int32_t y = 0; y < crop.value().height(); y++) {
+                    for (u_int32_t x = 0; x < crop.value().width(); x++) {
+                        newMatrix.setPixel(Vector2u(x, y), getPixel(Vector2u(x + crop.value().x(), y + crop.value().y())));
+                    }
+                }
+                return newMatrix;
+            }
+
+            bool  operator==(const PixelMatrix &other) const {
+                return _size == other._size && _pixelsTab == other._pixelsTab;
+            }
+
+            bool  operator!=(const PixelMatrix &other) const {
+                return !(*this == other);
+            }
         private:
             Vector2u _size; /*!< the size of the matrix */
             std::vector<Pixel> _pixelsTab; /*!< the matrix of pixel */
+            std::queue<Vector2u> _toUpdate;
     };
 }

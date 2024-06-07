@@ -8,19 +8,13 @@
 #include "tdl/Input/inputKeyboard.hpp"
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include <sys/select.h>
-#include <termios.h>
 #include "tdl/Window/windowBase.hpp"
-#include <vector>
 
-
-tdl::InputKeyboard::InputKeyboard()
+tdl::InputKeyboard::InputKeyboard(): _shared_data(KeyCodes::KEY_END)
 {
 }
 
-tdl::InputKeyboard::~InputKeyboard()
-{
-}
+tdl::InputKeyboard::~InputKeyboard() = default;
 
 void tdl::InputKeyboard::readInputKeyboard(WindowBase *win) {
     int _nread = 0;

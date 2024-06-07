@@ -58,6 +58,7 @@ namespace tdl
         KEY_7 = 55,
         KEY_8 = 56,
         KEY_9 = 57,
+        KEY_AMPERSAND = 96,
         KEY_END = 360,
     };
 

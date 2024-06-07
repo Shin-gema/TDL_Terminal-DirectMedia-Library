@@ -14,29 +14,56 @@
 #include "tdl/Sprite/Sprite.hpp"
 #include "tdl/Pixel/Pixel.hpp"
 #include "tdl/Vector.hpp"
+#include "tdl/Text/Font/Font.hpp"
+#include "tdl/Text/Text.hpp"
 #include <tuple>
 #include <queue>
+#include "tdl/Matrix/Transform.hpp"
+#include <chrono>
+#include <fstream>
 
 int main()
 {
+    auto start = std::chrono::high_resolution_clock::now();
     tdl::Window *win = tdl::Window::CreateWindow("bird");
     tdl::Texture *tex = tdl::Texture::createTexture("../example/assets/bird.png");
-    tdl::Sprite *sprite = tdl::Sprite::createSprite(tex, tdl::Vector2u(0, 0));
-    double rotation = 45.0;
+    tdl::Vector2u pos(10, 10);
+    tdl::Sprite *sprite = tdl::Sprite::createSprite(tex, pos);
+    double rotation = 0.0;
+    //tex->setPosition(10, 100);
+    tex->rotate(rotation);
+    //tex->setScale(2,2);
+    //sprite->setScale(1, 1);
+    //tex->setRect(tdl::RectU(100, 100, 100, 100));
     while (true)
     {
-        tex->setScale(tdl::Vector2f(0.5, 0.5));
-        sprite->setTexture(tex);
         win->clearPixel();
-        sprite->drawOn(win);
+        sprite->draw(win);
         win->update();
         win->draw();
         for(tdl::Event event; win->pollEvent(event);) {
             if (event.type == tdl::Event::EventType::KeyPressed) {
                 if (event.key.code == tdl::KeyCodes::KEY_ESC)
                     return 0;
+                if (event.key.code == tdl::KeyCodes::KEY_UP) {
+                    rotation += 0.1;
+                    tex->rotate(rotation);
+                }
+                if (event.key.code == tdl::KeyCodes::KEY_DOWN) {
+                    rotation -= 0.1;
+                    tex->rotate(rotation);
+                }
             }
         }
         win->printFrameRate();
     }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+
+    std::ofstream time_file("execution_time.txt", std::ios::app);
+    time_file << elapsed.count() << std::endl;
+    time_file.close();
+
+    return 0;
 }
