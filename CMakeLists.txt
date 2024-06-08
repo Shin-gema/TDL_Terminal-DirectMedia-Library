@@ -7,19 +7,17 @@ project(
         LANGUAGES CXX
 )
 
+option(BUILD_DEMO "Build the demo" OFF)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
 find_package(PNG REQUIRED)
 find_package(Freetype REQUIRED)
-find_package(ALSA REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SNDFILE REQUIRED sndfile)
-pkg_check_modules(LIBVORBIS REQUIRED vorbis vorbisfile)
-
-message(STATUS "libpng library found")
-message(STATUS "libpng include directories: ${PNG_INCLUDE_DIRS}")
-message(STATUS "libpng libraries: ${PNG_LIBRARIES}")
 
 file(GLOB_RECURSE TDL_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp")
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${PNG_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
 
 set(CMAKE_CXX_STANDARD 20)
@@ -31,8 +29,10 @@ set(TDL_LIB_DIR                 ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(EXT_LIBRARY_PATH            ${CMAKE_CURRENT_SOURCE_DIR}/3rd)
 set(EXT_LIBRARY_HEADER          ${CMAKE_CURRENT_SOURCE_DIR}/3rd/header/freetype2)
 
-include(${TDL_EXAMPLES_DIR}/CMakeLists.txt)
-
+if (BUILD_DEMO)
+    include(${TDL_EXAMPLES_DIR}/CMakeLists.txt)
+endif()
+message("Building shared libraries: ${BUILD_SHARED_LIBS}")
 find_package(Doxygen)
 
 if (DOXYGEN_FOUND)
@@ -49,3 +49,17 @@ if (DOXYGEN_FOUND)
 else (DOXYGEN_FOUND)
     message("Doxygen need to be installed to generate the doxygen documentation")
 endif (DOXYGEN_FOUND)
+
+if (BUILD_SHARED_LIBS)
+    add_library(TDL SHARED ${TDL_SOURCE})
+
+    target_link_libraries(TDL ${PNG_LIBRARIES} ${FREETYPE_LIBRARIES} ${OPENAL_LIBRARY} ${SNDFILE_LIBRARIES})
+
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/tdl
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.hpp")
+
+    install(TARGETS TDL
+        LIBRARY DESTINATION lib
+        PUBLIC_HEADER DESTINATION include)
+endif()
