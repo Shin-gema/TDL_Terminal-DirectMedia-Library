@@ -15,12 +15,12 @@ namespace tdl
     {
     }
 
-    void Transformable::setPosition(const Vector2f &position)
+    void Transformable::setPosition(const Vector2u &position)
     {
         setPosition(position.x(), position.y());
     }
 
-    void Transformable::setPosition(float x, float y)
+    void Transformable::setPosition(u_int32_t x, u_int32_t y)
     {
         m_position.x() = x;
         m_position.y() = y;

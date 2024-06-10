@@ -26,10 +26,11 @@ int main()
 {
     auto start = std::chrono::high_resolution_clock::now();
     tdl::Window *win = tdl::Window::CreateWindow("bird");
-    tdl::Texture *tex = tdl::Texture::createTexture("../example/assets/bird.png");
+    tdl::Texture *tex = tdl::Texture::createTexture("../example/assets/Spinner.png");
     tdl::Vector2u pos(10, 10);
     tdl::Sprite *sprite = tdl::Sprite::createSprite(tex, pos);
-    //tex->setRect(tdl::RectU(100, 100, 100, 100));
+    tdl::RectU rect(0, 0, 32, 32);
+    tex->setRect(rect);
     while (true)
     {
         win->clearPixel();
@@ -40,10 +41,33 @@ int main()
             if (event.type == tdl::Event::EventType::KeyPressed) {
                 if (event.key.code == tdl::KeyCodes::KEY_ESC)
                     return 0;
-                
+                if (event.key.code == tdl::KeyCodes::KEY_RIGHT) {
+                    pos += tdl::Vector2u(1, 0);
+                }
+                if (event.key.code == tdl::KeyCodes::KEY_LEFT) {
+                    pos -= tdl::Vector2u(1, 0);
+                }
+                if (event.key.code == tdl::KeyCodes::KEY_UP) {
+                    pos -= tdl::Vector2u(0, 1);
+                }
+                if (event.key.code == tdl::KeyCodes::KEY_DOWN) {
+                    pos += tdl::Vector2u(0, 1);
+                }
             }
         }
+        sprite->setPosition(pos);
+        if (rect.x() >= 32) {
+            rect.x() = 0;
+            if (rect.y() >= 96) {
+                rect.y() = 0;
+            } else {
+                rect.y() += 32;
+            }
+        } else {
+            rect.x() += 32;
+        }
         win->printFrameRate();
+        tex->setRect(rect);
     }
 
     auto end = std::chrono::high_resolution_clock::now();
