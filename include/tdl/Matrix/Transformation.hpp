@@ -13,8 +13,8 @@
             Transformable();
             virtual ~Transformable();
 
-            void setPosition(const Vector2f &position);
-            void setPosition(float x, float y);
+            void setPosition(const Vector2u &position);
+            void setPosition(u_int32_t x, u_int32_t y);
 
             void setRotation(float angle);
             void setScale(const Vector2f &factors);
