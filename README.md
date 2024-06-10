@@ -29,8 +29,8 @@ Development is focused in adding new feature and improve the C++ Library. You ca
 - [x] Implement texture and sprite management
 - [x] Implement event handler
 - [x] Implement keyboard input manager
-- [ ] Implement music and sound solution
-- [ ] Implement Text method.
+- [x] Implement music and sound solution
+- [x] Implement Text method.
 - [x] Improve resolution and performance
 - [ ] Implement new image loading solution. (actually only PNG is handle)
 
