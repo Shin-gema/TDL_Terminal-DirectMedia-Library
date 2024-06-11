@@ -35,6 +35,11 @@ tdl::Sprite* tdl::Sprite::createSprite(tdl::Texture *texture, tdl::Vector2u &pos
     return new tdl::Sprite(texture, pos, rect);
 }
 
+tdl::Sprite* tdl::Sprite::createSprite(tdl::Texture *texture, tdl::Vector2u pos)
+{
+    return new tdl::Sprite(texture, pos);
+}
+
 /**
  * @brief Construct a new tdl::Sprite::Sprite object
  * 

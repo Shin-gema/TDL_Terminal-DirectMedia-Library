@@ -31,7 +31,7 @@ int main()
     tdl::Window *win = tdl::Window::CreateWindow("bird");
     tdl::Texture *tex = tdl::Texture::createTexture("../example/assets/rick.png");
     tdl::Vector2u pos(10, 10);
-    tdl::Sprite *sprite = tdl::Sprite::createSprite(tex, pos);
+    tdl::Sprite *sprite = tdl::Sprite::createSprite(tex, tdl::Vector2u(0, 0));
     double rotation = 45.0;
     //tex->rotate(rotation);
     tdl::Sound sound;

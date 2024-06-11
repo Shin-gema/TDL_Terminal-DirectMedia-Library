@@ -8,14 +8,20 @@ The purpose of this project is to permitted the majority of the functionality of
 
 # Install
 
-To install and use TDL in your project please follow these steps
+## From AUR
+
+To install from the AUR you can found the link [here](https://aur.archlinux.org/packages/tdl_terminal_directmedia_library).
+
+## From this repository
+
+To install and use TDL in your project please follow these steps    
 
 1. Clone this repository.
+
 2. Create and build folders and run the following command inside.
 ```
-cmake ..
-sudo make
-sudo make install
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr/ -DBUILD_SHARED_LIBS=ON
+cmake --build . --target install (you may need to run this as sudo)
 ```
 The file should be correctly installed, and you can compile your code with the library using:
 ``` make your_project -ltdl```
@@ -36,6 +42,9 @@ Development is focused in adding new feature and improve the C++ Library. You ca
 
 ## External library used
 - [libpng](https://github.com/pnggroup/libpng) under [png library licence](https://spdx.org/licenses/libpng-2.0.html)
+- [openAl](https://www.openal.org/) under [GNU LGPL](https://www.gnu.org/licenses/lgpl-2.1.html)
+- [freetype](https://www.freetype.org/) under [GNU LGPL](https://www.gnu.org/licenses/lgpl-2.1.html)
+- [sndfile](http://www.mega-nerd.com/libsndfile/) under [GNU LGPL](https://www.gnu.org/licenses/lgpl-2.1.html)
 
 ## Contributing
 

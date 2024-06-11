@@ -28,7 +28,7 @@ int main()
     tdl::Window *win = tdl::Window::CreateWindow("bird");
     tdl::Texture *tex = tdl::Texture::createTexture("../example/assets/bird.png");
     tdl::Vector2u pos(10, 10);
-    tdl::Sprite *sprite = tdl::Sprite::createSprite(tex, pos);
+    tdl::Sprite *sprite = tdl::Sprite::createSprite(tex, tdl::Vector2u(0, 0));
     //tex->setRect(tdl::RectU(100, 100, 100, 100));
     while (true)
     {

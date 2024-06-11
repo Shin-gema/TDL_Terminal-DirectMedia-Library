@@ -4,6 +4,10 @@
 
 #include "tdl/Matrix/Transformation.hpp"
 #include "tdl/Matrix/Transform.hpp"
+#include <iomanip>
+#include <iostream>
+
+
 
 namespace tdl
 {
@@ -27,7 +31,7 @@ namespace tdl
         TransformNeedUpdate = true;
     }
 
-    void Transformable::setRotation(float angle)
+    void Transformable::setRotation(double angle)
     {
         m_rotation = angle;
         TransformNeedUpdate = true;
@@ -38,7 +42,7 @@ namespace tdl
         setScale(factors.x(), factors.y());
     }
 
-    void Transformable::setScale(float factorX, float factorY)
+    void Transformable::setScale(double factorX, double factorY)
     {
         m_scale.x() = factorX;
         m_scale.y() = factorY;
@@ -50,7 +54,7 @@ namespace tdl
         setOrigin(origin.x(), origin.y());
     }
 
-    void Transformable::setOrigin(float x, float y)
+    void Transformable::setOrigin(double x, double y)
     {
         m_origin.x() = x;
         m_origin.y() = y;
@@ -62,7 +66,7 @@ namespace tdl
         return m_position;
     }
 
-    float Transformable::getRotation() const
+    double Transformable::getRotation() const
     {
         return m_rotation;
     }
@@ -82,14 +86,14 @@ namespace tdl
         move(offset.x(), offset.y());
     }
 
-    void Transformable::move(float offsetX, float offsetY)
+    void Transformable::move(double offsetX, double offsetY)
     {
         m_position.x() = m_position.x() + offsetX;
         m_position.y() = m_position.y() + offsetY;
         TransformNeedUpdate = true;
     }
 
-    void Transformable::rotate(float angle)
+    void Transformable::rotate(double angle)
     {
         m_rotation += angle;
         TransformNeedUpdate = true;
@@ -100,7 +104,7 @@ namespace tdl
         scale(factor.x(), factor.y());
     }
 
-    void Transformable::scale(float factorX, float factorY)
+    void Transformable::scale(double factorX, double factorY)
     {
         m_scale.x() = m_scale.x() * factorX;
         m_scale.y() = m_scale.y() * factorY;
@@ -111,18 +115,17 @@ namespace tdl
     {
         if (TransformNeedUpdate)
         {
-            float angle = -m_rotation * M_PI / 180.f;
-            float cosine = std::cos(angle);
-            float sine = std::sin(angle);
-            float sxc = m_scale.x() * cosine;
-            float syc = m_scale.y() * cosine;
-            float sxs = m_scale.x() * sine;
-            float sys = m_scale.y() * sine;
-            float tx = -m_origin.x() * sxc - m_origin.y() * sys + m_position.x();
-            float ty = m_origin.x() * sxs - m_origin.y() * syc + m_position.y();
-
+            double angle = -m_rotation * M_PI / 180.f;
+            double cosine = std::cos(angle);
+            double sine = std::sin(angle);
+            double sxc = m_scale.x() * cosine;
+            double syc = m_scale.y() * cosine;
+            double sxs = m_scale.x() * sine;
+            double sys = m_scale.y() * sine;
+            double tx = -m_origin.x() * sxc - m_origin.y() * sys + m_position.x();
+            double ty = m_origin.x() * sxs - m_origin.y() * syc + m_position.y();
             m_transform = Transform(sxc, sys, tx,
-                                    -sxs, syc, ty,
+                                    -sxs, syc, ty,  
                                     0.f, 0.f, 1.f);
             TransformNeedUpdate = false;
         }

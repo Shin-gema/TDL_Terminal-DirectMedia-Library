@@ -31,6 +31,9 @@ namespace tdl {
          */
             static Sprite *createSprite(Texture *texture, Vector2u &pos);
 
+            static Sprite *createSprite(tdl::Texture *texture, tdl::Vector2u pos);
+
+
         /**
          * @brief Create a Sprite object
          * 

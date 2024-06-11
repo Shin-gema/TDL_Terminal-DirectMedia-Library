@@ -11,7 +11,6 @@ option(BUILD_DEMO "Build the demo" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 find_package(PNG REQUIRED)
-find_package(Freetype REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SNDFILE REQUIRED sndfile)
