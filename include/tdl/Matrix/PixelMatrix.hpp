@@ -72,7 +72,7 @@ namespace tdl {
  * @param pos the position of the pixel
  * @return Pixel the pixel at the position pos
  */
-            constexpr Pixel &getPixel(Vector2u pos) {
+            Pixel &getPixel(Vector2u pos) {
                 if (pos.x() > _size.x() || pos.y() > _size.y()) {
                     return _pixelsTab[0];
                 }
